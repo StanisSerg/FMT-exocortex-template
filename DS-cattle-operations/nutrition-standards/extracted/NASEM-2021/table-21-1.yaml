@@ -1,0 +1,556 @@
+meta:
+  source: "NASEM 2021"
+  table: "21-1"
+  title: "Концентрация питательных веществ (в СВ) для скота Голштинской породы разного возраста и стадий лактации"
+  breed: "Holstein"
+  note: "Потребности в энергии и протеине для сухостойных и лактирующих коров рассчитаны исходя из привеса 0.19 и 0.10 кг/сут. у первотёлок и коров соответственно."
+  dcad_note: "DCAD-S (short) = [(K+ + Na+) - (Cl- + S2-)], мЭкв/кг"
+  status: "complete"
+  last_updated: "2026-04-22"
+
+groups:
+  # Ремонтные телята и тёлки
+  heifer_30d:
+    name: "Ремонтные телята, 30 дней"
+    name_en: "Replacement calves, 30 days"
+    category: "heifers"
+    age_days: 30
+    bw_kg: 65
+    adg_kg: 0.7
+    dmi_kg: 1.4
+    energy_mcal_kg: 3.68
+    protein_pct:
+      cp: 21.0
+      mp: 16.5
+      rdp_pct_cp: null
+      rup_pct_cp: null
+    fiber_pct:
+      ndf_min: null
+      forage_ndf_min: null
+    starch_max_pct: null
+    minerals_macro_pct:
+      Ca: 0.59
+      P: 0.45
+      Mg: 0.15
+      K: 1.00
+      Na: 0.35
+      Cl: 0.28
+      S: null
+    dcad_meq_kg: null
+    micro_mg_kg:
+      Cu: 5
+      Co: null
+      I: 0.78
+      Fe: 90
+      Mn: 50
+      Se: 0.3
+      Zn: 70
+    vitamins_iu_kg:
+      A: 5218
+      D: 1518
+      E: 86
+
+  heifer_100d:
+    name: "Ремонтные тёлки, 100 дней"
+    name_en: "Replacement heifers, 100 days"
+    category: "heifers"
+    age_days: 100
+    bw_kg: 120
+    adg_kg: 0.7
+    dmi_kg: 3.9
+    energy_mcal_kg: 2.26
+    protein_pct:
+      cp: 16.6
+      mp: 9.5
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 6.6
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.78
+      P: 0.32
+      Mg: 0.14
+      K: 0.51
+      Na: 0.17
+      Cl: 0.14
+      S: 0.20
+    dcad_meq_kg: 39
+    micro_mg_kg:
+      Cu: 16
+      Co: 0.20
+      I: 0.69
+      Fe: 61
+      Mn: 49
+      Se: 0.3
+      Zn: 47
+    vitamins_iu_kg:
+      A: 3390
+      D: 924
+      E: 49
+
+  heifer_225d:
+    name: "Ремонтные тёлки, 225 дней"
+    name_en: "Replacement heifers, 225 days"
+    category: "heifers"
+    age_days: 225
+    bw_kg: 230
+    adg_kg: 0.9
+    dmi_kg: 6.6
+    energy_mcal_kg: 2.09
+    protein_pct:
+      cp: 14.4
+      mp: 8.1
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 4.4
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.58
+      P: 0.26
+      Mg: 0.12
+      K: 0.52
+      Na: 0.16
+      Cl: 0.14
+      S: 0.20
+    dcad_meq_kg: 42
+    micro_mg_kg:
+      Cu: 16
+      Co: 0.20
+      I: 0.58
+      Fe: 46
+      Mn: 44
+      Se: 0.3
+      Zn: 41
+    vitamins_iu_kg:
+      A: 3829
+      D: 1044
+      E: 56
+
+  heifer_350d:
+    name: "Ремонтные тёлки, 350 дней"
+    name_en: "Replacement heifers, 350 days"
+    category: "heifers"
+    age_days: 350
+    bw_kg: 330
+    adg_kg: 0.8
+    dmi_kg: 8.5
+    energy_mcal_kg: 1.95
+    protein_pct:
+      cp: 12.6
+      mp: 6.8
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 2.6
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.44
+      P: 0.21
+      Mg: 0.12
+      K: 0.54
+      Na: 0.16
+      Cl: 0.13
+      S: 0.20
+    dcad_meq_kg: 45
+    micro_mg_kg:
+      Cu: 15
+      Co: 0.20
+      I: 0.54
+      Fe: 32
+      Mn: 40
+      Se: 0.3
+      Zn: 36
+    vitamins_iu_kg:
+      A: 4265
+      D: 1163
+      E: 62
+
+  heifer_475d:
+    name: "Ремонтные тёлки, 475 дней"
+    name_en: "Replacement heifers, 475 days"
+    category: "heifers"
+    age_days: 475
+    bw_kg: 420
+    adg_kg: 0.7
+    dmi_kg: 9.8
+    energy_mcal_kg: 1.92
+    protein_pct:
+      cp: 11.7
+      mp: 6.1
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 1.7
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.37
+      P: 0.18
+      Mg: 0.12
+      K: 0.56
+      Na: 0.15
+      Cl: 0.13
+      S: 0.20
+    dcad_meq_kg: 50
+    micro_mg_kg:
+      Cu: 15
+      Co: 0.20
+      I: 0.53
+      Fe: 24
+      Mn: 38
+      Se: 0.3
+      Zn: 34
+    vitamins_iu_kg:
+      A: 4698
+      D: 1281
+      E: 68
+
+  heifer_600d:
+    name: "Ремонтные тёлки, 600 дней"
+    name_en: "Replacement heifers, 600 days"
+    category: "heifers"
+    age_days: 600
+    bw_kg: 530
+    adg_kg: 0.9
+    dmi_kg: 11.0
+    energy_mcal_kg: 2.12
+    protein_pct:
+      cp: 12.7
+      mp: 14.0
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 2.7
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.39
+      P: 0.19
+      Mg: 0.10
+      K: 0.60
+      Na: 0.16
+      Cl: 0.13
+      S: 0.20
+    dcad_meq_kg: 60
+    micro_mg_kg:
+      Cu: 17
+      Co: 0.20
+      I: 0.54
+      Fe: 28
+      Mn: 43
+      Se: 0.3
+      Zn: 35
+    vitamins_iu_kg:
+      A: 5288
+      D: 1442
+      E: 77
+
+  # Сухостойные коровы
+  dry_far_off:
+    name: "Сухостойные коровы (60-21 дн до отёла)"
+    name_en: "Dry cows, far-off (60-21 days prepartum)"
+    category: "dry"
+    dim: "-60 to -21"
+    bw_kg: 740
+    adg_kg: 0.1
+    dmi_kg: 13.9
+    energy_mcal_kg: 1.93
+    nel_mcal_kg: 1.28
+    protein_pct:
+      cp: 11.9
+      mp: 5.2
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 1.9
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.31
+      P: 0.19
+      Mg: 0.13
+      K: 0.62
+      Na: 0.16
+      Cl: 0.13
+      S: 0.20
+    dcad_meq_kg: 66
+    micro_mg_kg:
+      Cu: 18
+      Co: 0.20
+      I: 0.51
+      Fe: 13
+      Mn: 38
+      Se: 0.3
+      Zn: 30
+    vitamins_iu_kg:
+      A: 5850
+      D: 1595
+      E: 85
+
+  dry_close_up:
+    name: "Сухостойные коровы (<21 дн до отёла)"
+    name_en: "Dry cows, close-up (<21 days prepartum)"
+    category: "dry"
+    dim: "-21 to 0"
+    bw_kg: 740
+    adg_kg: 0.1
+    dmi_kg: 12.3
+    energy_mcal_kg: 2.25
+    nel_mcal_kg: 1.49
+    protein_pct:
+      cp: 14.3
+      mp: 6.7
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 4.3
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "15-20"
+    minerals_macro_pct:
+      Ca: 0.39
+      P: 0.21
+      Mg: 0.14
+      K: 0.69
+      Na: 0.17
+      Cl: 0.14
+      S: 0.20
+    dcad_meq_kg: -100
+    micro_mg_kg:
+      Cu: 19
+      Co: 0.20
+      I: 0.54
+      Fe: 15
+      Mn: 43
+      Se: 0.3
+      Zn: 32
+    vitamins_iu_kg:
+      A: 6630
+      D: 1810
+      E: 181
+
+  # Лактирующие коровы — Первотёлки 570 кг
+  lact1_570_15dim:
+    name: "Первотёлки 570 кг, 15 DIM"
+    name_en: "1st lactation Holstein, 570 kg BW, 15 DIM"
+    category: "lactation"
+    lactation_number: 1
+    bw_kg: 570
+    dim: 15
+    milk_kg: 33
+    fat_pct: 3.9
+    protein_pct_milk: 3.1
+    dmi_kg: 20.8
+    energy_mcal_kg: 2.39
+    nel_mcal_kg: 1.58
+    protein_pct:
+      cp: 16.2
+      mp: 9.8
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 6.2
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "22-30"
+    minerals_macro_pct:
+      Ca: 0.57
+      P: 0.35
+      Mg: 0.17
+      K: 1.03
+      Na: 0.21
+      Cl: 0.29
+      S: 0.20
+    dcad_meq_kg: 148
+    micro_mg_kg:
+      Cu: 9
+      Co: 0.20
+      I: 0.46
+      Fe: 16
+      Mn: 28
+      Se: 0.3
+      Zn: 57
+    vitamins_iu_kg:
+      A: 3021
+      D: 1099
+      E: 22
+
+  lact1_570_150dim:
+    name: "Первотёлки 570 кг, 150 DIM"
+    name_en: "1st lactation Holstein, 570 kg BW, 150 DIM"
+    category: "lactation"
+    lactation_number: 1
+    bw_kg: 570
+    dim: 150
+    milk_kg: 39
+    fat_pct: 3.6
+    protein_pct_milk: 3.0
+    dmi_kg: 23.9
+    energy_mcal_kg: 2.61
+    nel_mcal_kg: 1.72
+    protein_pct:
+      cp: 16.0
+      mp: 9.8
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 7.0
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "22-30"
+    minerals_macro_pct:
+      Ca: 0.57
+      P: 0.35
+      Mg: 0.17
+      K: 0.97
+      Na: 0.21
+      Cl: 0.30
+      S: 0.20
+    dcad_meq_kg: 130
+    micro_mg_kg:
+      Cu: 8
+      Co: 0.20
+      I: 0.42
+      Fe: 16
+      Mn: 26
+      Se: 0.3
+      Zn: 58
+    vitamins_iu_kg:
+      A: 2796
+      D: 954
+      E: 19
+
+  # Лактирующие коровы — 2-я и старше 700 кг
+  lact2p_700_20dim:
+    name: "Коровы 2-я+ лактация 700 кг, 20 DIM"
+    name_en: "2nd+ lactation Holstein, 700 kg BW, 20 DIM"
+    category: "lactation"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 20
+    milk_kg: 53
+    fat_pct: 3.7
+    protein_pct_milk: 2.8
+    dmi_kg: 25.8
+    energy_mcal_kg: 2.58
+    nel_mcal_kg: 1.70
+    protein_pct:
+      cp: 17.5
+      mp: 10.9
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 7.5
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "22-30"
+    minerals_macro_pct:
+      Ca: 0.64
+      P: 0.39
+      Mg: 0.18
+      K: 1.10
+      Na: 0.23
+      Cl: 0.34
+      S: 0.20
+    dcad_meq_kg: 157
+    micro_mg_kg:
+      Cu: 10
+      Co: 0.20
+      I: 0.47
+      Fe: 21
+      Mn: 31
+      Se: 0.3
+      Zn: 66
+    vitamins_iu_kg:
+      A: 3687
+      D: 1085
+      E: 22
+
+  lact2p_700_100dim:
+    name: "Коровы 2-я+ лактация 700 кг, 100 DIM"
+    name_en: "2nd+ lactation Holstein, 700 kg BW, 100 DIM"
+    category: "lactation"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 100
+    milk_kg: 55
+    fat_pct: 3.5
+    protein_pct_milk: 2.8
+    dmi_kg: 29.4
+    energy_mcal_kg: 2.73
+    nel_mcal_kg: 1.80
+    protein_pct:
+      cp: 17.4
+      mp: 10.2
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 7.4
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "22-30"
+    minerals_macro_pct:
+      Ca: 0.60
+      P: 0.37
+      Mg: 0.18
+      K: 1.00
+      Na: 0.22
+      Cl: 0.32
+      S: 0.20
+    dcad_meq_kg: 135
+    micro_mg_kg:
+      Cu: 8
+      Co: 0.20
+      I: 0.42
+      Fe: 19
+      Mn: 28
+      Se: 0.3
+      Zn: 62
+    vitamins_iu_kg:
+      A: 3303
+      D: 952
+      E: 19
+
+  lact2p_700_200dim:
+    name: "Коровы 2-я+ лактация 700 кг, 200 DIM"
+    name_en: "2nd+ lactation Holstein, 700 kg BW, 200 DIM"
+    category: "lactation"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 200
+    milk_kg: 43
+    fat_pct: 3.8
+    protein_pct_milk: 3.3
+    dmi_kg: 27.4
+    energy_mcal_kg: 2.60
+    nel_mcal_kg: 1.73
+    protein_pct:
+      cp: 17.5
+      mp: 10.1
+      rdp_pct_cp: 10.0
+      rup_pct_cp: 7.5
+    fiber_pct:
+      ndf_min: "25-33"
+      forage_ndf_min: "19-25"
+    starch_max_pct: "22-30"
+    minerals_macro_pct:
+      Ca: 0.58
+      P: 0.35
+      Mg: 0.17
+      K: 0.99
+      Na: 0.21
+      Cl: 0.29
+      S: 0.20
+    dcad_meq_kg: 137
+    micro_mg_kg:
+      Cu: 10
+      Co: 0.20
+      I: 0.41
+      Fe: 16
+      Mn: 27
+      Se: 0.3
+      Zn: 61
+    vitamins_iu_kg:
+      A: 3103
+      D: 1021
+      E: 20

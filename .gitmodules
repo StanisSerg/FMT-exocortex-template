@@ -1,0 +1,18 @@
+[submodule "DS-agent-workspace"]
+	path = DS-agent-workspace
+	url = https://github.com/StanisSerg/DS-agent-workspace.git
+[submodule "DS-cattle-course"]
+	path = DS-cattle-course
+	url = https://github.com/StanisSerg/DS-cattle-course.git
+[submodule "DS-strategy"]
+	path = DS-strategy
+	url = https://github.com/StanisSerg/DS-strategy.git
+[submodule "FPF"]
+	path = FPF
+	url = https://github.com/ailev/FPF.git
+[submodule "PACK-cattle-science"]
+	path = PACK-cattle-science
+	url = https://github.com/StanisSerg/PACK-cattle-science.git
+[submodule "SPF"]
+	path = SPF
+	url = https://github.com/TserenTserenov/SPF.git

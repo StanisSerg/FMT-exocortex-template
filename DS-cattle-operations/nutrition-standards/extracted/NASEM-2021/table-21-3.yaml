@@ -1,0 +1,292 @@
+meta:
+  source: "NASEM 2021"
+  table: "21-3"
+  title: "Потребности в протеине и аминокислотах для первотёлок и коров Голштинской и Джерсейской пород на разных стадиях лактации"
+  note: "Чистый протеин и аминокислоты указаны в г/сут. Эффективность использования обменного протеина = 0.69."
+  status: "complete"
+  last_updated: "2026-04-22"
+
+groups:
+  # Голштинские — 1-я лактация, 570 кг
+  holstein_1st_570_15dim:
+    breed: "Holstein"
+    name: "Первотёлки 570 кг, 15 DIM"
+    lactation_number: 1
+    bw_kg: 570
+    dim: 15
+    milk_kg: 33
+    milk_protein_pct: 3.06
+    milk_protein_g_day: 1010
+    dmi_kg: 20.8
+    protein_g_day:
+      cp: 3370
+      rdp: 2080
+      rup: 1290
+      true_protein: 1462
+      mp: 2034
+    amino_acids_efficiency:
+      His: 0.75
+      Ile: 0.69
+      Leu: 0.74
+      Lys: 0.70
+      Met: 0.70
+      Phe: 0.60
+      Thr: 0.60
+      Trp: 0.63
+      Val: 0.85
+    amino_acids_g_day:
+      His: 53
+      Ile: 108
+      Leu: 182
+      Lys: 154
+      Met: 49
+      Phe: 113
+      Thr: 104
+      Trp: 25
+      Val: 120
+
+  holstein_1st_570_150dim:
+    breed: "Holstein"
+    name: "Первотёлки 570 кг, 150 DIM"
+    lactation_number: 1
+    bw_kg: 570
+    dim: 150
+    milk_kg: 39
+    milk_protein_pct: 3.02
+    milk_protein_g_day: 1178
+    dmi_kg: 23.9
+    protein_g_day:
+      cp: 4063
+      rdp: 2390
+      rup: 1673
+      true_protein: 1667
+      mp: 2333
+    amino_acids_g_day:
+      His: 61
+      Ile: 126
+      Leu: 211
+      Lys: 179
+      Met: 57
+      Phe: 131
+      Thr: 120
+      Trp: 29
+      Val: 139
+
+  # Голштинские — 2-я и старше, 700 кг
+  holstein_2plus_700_20dim:
+    breed: "Holstein"
+    name: "Коровы 2-я+ 700 кг, 20 DIM"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 20
+    milk_kg: 53
+    milk_protein_pct: 2.76
+    milk_protein_g_day: 1463
+    dmi_kg: 25.8
+    protein_g_day:
+      cp: 4515
+      rdp: 2580
+      rup: 1935
+      true_protein: 2005
+      mp: 2802
+    amino_acids_g_day:
+      His: 73
+      Ile: 152
+      Leu: 254
+      Lys: 216
+      Met: 69
+      Phe: 157
+      Thr: 143
+      Trp: 35
+      Val: 168
+
+  holstein_2plus_700_100dim:
+    breed: "Holstein"
+    name: "Коровы 2-я+ 700 кг, 100 DIM"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 100
+    milk_kg: 55
+    milk_protein_pct: 2.83
+    milk_protein_g_day: 1557
+    dmi_kg: 29.4
+    protein_g_day:
+      cp: 5116
+      rdp: 2940
+      rup: 2176
+      true_protein: 2141
+      mp: 2999
+    amino_acids_g_day:
+      His: 79
+      Ile: 164
+      Leu: 273
+      Lys: 232
+      Met: 74
+      Phe: 169
+      Thr: 155
+      Trp: 38
+      Val: 181
+
+  holstein_2plus_700_200dim:
+    breed: "Holstein"
+    name: "Коровы 2-я+ 700 кг, 200 DIM"
+    lactation_number: "2+"
+    bw_kg: 700
+    dim: 200
+    milk_kg: 43
+    milk_protein_pct: 3.26
+    milk_protein_g_day: 1402
+    dmi_kg: 27.4
+    protein_g_day:
+      cp: 4795
+      rdp: 2740
+      rup: 2055
+      true_protein: 1968
+      mp: 2757
+    amino_acids_g_day:
+      His: 72
+      Ile: 149
+      Leu: 249
+      Lys: 212
+      Met: 68
+      Phe: 154
+      Thr: 142
+      Trp: 34
+      Val: 165
+
+  # Джерсейские — 1-я лактация, 425 кг
+  jersey_1st_425_15dim:
+    breed: "Jersey"
+    name: "Первотёлки 425 кг, 15 DIM"
+    lactation_number: 1
+    bw_kg: 425
+    dim: 15
+    milk_kg: 22
+    milk_protein_pct: 3.90
+    milk_protein_g_day: 858
+    dmi_kg: 16.5
+    protein_g_day:
+      cp: 2772
+      rdp: 1650
+      rup: 1122
+      true_protein: 1207
+      mp: 1686
+    amino_acids_g_day:
+      His: 39
+      Ile: 88
+      Leu: 137
+      Lys: 120
+      Met: 39
+      Phe: 87
+      Thr: 80
+      Trp: 19
+      Val: 96
+
+  jersey_1st_425_150dim:
+    breed: "Jersey"
+    name: "Первотёлки 425 кг, 150 DIM"
+    lactation_number: 1
+    bw_kg: 425
+    dim: 150
+    milk_kg: 27
+    milk_protein_pct: 3.70
+    milk_protein_g_day: 999
+    dmi_kg: 19.4
+    protein_g_day:
+      cp: 3414
+      rdp: 1940
+      rup: 1474
+      true_protein: 1382
+      mp: 1942
+    amino_acids_g_day:
+      His: 54
+      Ile: 113
+      Leu: 183
+      Lys: 162
+      Met: 52
+      Phe: 114
+      Thr: 107
+      Trp: 26
+      Val: 127
+
+  # Джерсейские — 2-я и старше, 525 кг
+  jersey_2plus_525_20dim:
+    breed: "Jersey"
+    name: "Коровы 2-я+ 525 кг, 20 DIM"
+    lactation_number: "2+"
+    bw_kg: 525
+    dim: 20
+    milk_kg: 35
+    milk_protein_pct: 3.49
+    milk_protein_g_day: 1222
+    dmi_kg: 20.5
+    protein_g_day:
+      cp: 3690
+      rdp: 2050
+      rup: 1640
+      true_protein: 1644
+      mp: 2306
+    amino_acids_g_day:
+      His: 50
+      Ile: 117
+      Leu: 179
+      Lys: 156
+      Met: 52
+      Phe: 115
+      Thr: 103
+      Trp: 25
+      Val: 127
+
+  jersey_2plus_525_100dim:
+    breed: "Jersey"
+    name: "Коровы 2-я+ 525 кг, 100 DIM"
+    lactation_number: "2+"
+    bw_kg: 525
+    dim: 100
+    milk_kg: 37
+    milk_protein_pct: 3.46
+    milk_protein_g_day: 1280
+    dmi_kg: 23.5
+    protein_g_day:
+      cp: 4230
+      rdp: 2350
+      rup: 1880
+      true_protein: 1749
+      mp: 2457
+    amino_acids_g_day:
+      His: 67
+      Ile: 142
+      Leu: 229
+      Lys: 202
+      Met: 66
+      Phe: 143
+      Thr: 133
+      Trp: 32
+      Val: 159
+
+  jersey_2plus_525_200dim:
+    breed: "Jersey"
+    name: "Коровы 2-я+ 525 кг, 200 DIM"
+    lactation_number: "2+"
+    bw_kg: 525
+    dim: 200
+    milk_kg: 31
+    milk_protein_pct: 3.69
+    milk_protein_g_day: 1144
+    dmi_kg: 21.9
+    protein_g_day:
+      cp: 3854
+      rdp: 2190
+      rup: 1664
+      true_protein: 1586
+      mp: 2228
+    amino_acids_g_day:
+      His: 61
+      Ile: 127
+      Leu: 206
+      Lys: 183
+      Met: 59
+      Phe: 129
+      Thr: 121
+      Trp: 29
+      Val: 143

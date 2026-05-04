@@ -1,0 +1,174 @@
+---
+# CASE INPUT TEMPLATE v1.0
+# Light Automation: структурированный ввод сразу
+# НЕ используйте notes_raw для расчётов — только structured fields
+
+template_id: CASE-INPUT-001
+version: "1.0"
+date: 2026-04-11
+rule_applied: RULE-001  # или другой RULE-ID
+
+---
+
+## SECTION A: IDENTIFICATION (идентификация)
+
+case_id: "CASE-XXX"           # Авто-генерация: CASE-{n+1}
+farm_id: "FARM-XXX"           # ID фермы
+cow_id: "COW-XXXXX"           # ID животного
+operator_id: "USER-XXX"       # Кто вводит данные
+timestamp_input: "2026-04-11T14:30:00+03:00"  # ISO 8601
+
+---
+
+## SECTION B: RAW MEASUREMENTS (сырые замеры)
+
+# Все значения — как есть, без расчётов
+bhb_mmol_l: 1.6               # BHB, ммоль/л
+dim_days: 18                  # DIM, дней от отела
+dmi_kg: 14.2                  # Фактический DMI, кг
+body_weight_kg: 650           # Живая масса, кг
+bcs_current: 3.0              # Текущий BCS (1-5)
+bcs_at_calving: 3.5           # BCS при отеле
+milk_yield_l: 28              # Удой, л/день
+ast_u_l: 142                  # АСТ, Ед/л (опционально)
+
+---
+
+## SECTION C: DERIVED PARAMETERS (авто-расчёт)
+
+# Рассчитываются автоматически, не вводятся вручную
+derived:
+  dmi_ratio_pct: 79           # (dmi_kg / expected_dmi) * 100
+  bcs_loss: 0.5               # bcs_at_calving - bcs_current
+  expected_dmi: 18.0          # NRC-based по массе и удою
+  
+  # Формулы:
+  # dmi_ratio_pct = (dmi_kg / expected_dmi) * 100
+  # bcs_loss = bcs_at_calving - bcs_current
+
+---
+
+## SECTION D: CLINICAL FLAGS (блокирующие условия)
+
+clinical_signs:
+  acetone_breath: false       # Ацетоновое дыхание
+  ataxia: false               # Атаксия
+  hypersalivation: false      # Гиперсаливация
+  depression: false           # Угнетение
+  anorexia: false             # Полный отказ от корма
+  
+# Если ЛЮБОЙ true → RULE_001_BLOCKED → клинический протокол
+
+---
+
+## SECTION E: CONTEXT (контекст)
+
+# НЕ используется для расчётов — только для понимания
+notes_raw: |
+  Корова в группе сухостойных, рацион энергичный,
+  доступ к воде ограничен в жаркие дни.
+  
+environment:
+  temperature_c: 22
+  humidity_pct: 65
+  season: "spring"            # spring/summer/autumn/winter
+  
+management:
+  feeding_frequency: 2        # раз в день
+  group_type: "dry_plus"      # dry / dry_plus / fresh / high
+  
+---
+
+## SECTION F: PREDICTION (фиксируется в момент решения)
+
+# Заполняется ПЕРЕД применением терапии
+prediction:
+  timestamp: "2026-04-11T14:35:00+03:00"
+  rule_verdict: "RULE_001_TRIGGERED"  # RULE_001_BLOCKED / NOT_TRIGGERED / TRIGGERED
+  confidence: "HIGH"            # LOW / MEDIUM / HIGH
+  
+  hard_conditions_met: true
+  soft_conditions_met: 2        # 0 / 1 / 2
+  
+  reasoning:
+    - "BHB=1.6 > 1.2 (hard)"
+    - "DIM=18 < 30 (hard)"
+    - "DMI=79% < 80% (soft)"
+    - "BCS_loss=0.5 >= 0.5 (soft)"
+  
+  recommended_action: "SYSTEM_CORRECTION"
+  economic_verdict: "LIKELY_INEFFICIENT_STANDARD_THERAPY"
+
+---
+
+## SECTION G: DECISION (что было решено)
+
+decision:
+  timestamp: "2026-04-11T14:40:00+03:00"
+  action_taken: "SYSTEM_CORRECTION"  # SYSTEM_CORRECTION / STANDARD_THERAPY / OTHER
+  
+  basis: "RULE-001 recommendation"   # на основе чего решение
+  
+  interventions:
+    - type: "ration_adjustment"
+      details: "Reduced energy density, increased NDF to 42%"
+    - type: "group_management"
+      details: "Separated from dry cows"
+    - type: "propylene_glycol"
+      details: "300ml/day x 5 days (support)"
+      
+  veto_override: false          # true если решение против рекомендации
+  veto_reason: null             # причина, если override
+
+---
+
+## SECTION H: OUTCOME (результат через 7-14 дней)
+
+outcome:
+  timestamp_followup: "2026-04-18T10:00:00+03:00"
+  
+  metrics:
+    bhb_mmol_l: 0.4
+    dmi_kg: 19.2
+    milk_yield_l: 34
+    ast_u_l: 89
+    bcs_current: 3.0
+    
+  success_criteria_met: true    # BHB <1.2 AND DMI >90%
+  
+  classification: "TP"          # TP / FP / FN (заполняется при анализе)
+  
+  roi_calculation:
+    costs_incurred: 3500
+    revenue_gain: 5740
+    roi_pct: 64
+    
+  notes_outcome: |
+    Полное восстановление DMI, BHB нормализовался.
+    Удой вырос на 6 л/день.
+
+---
+
+## VALIDATION CHECKLIST
+
+- [ ] Все raw measurements заполнены
+- [ ] Derived parameters рассчитаны (авто)
+- [ ] Clinical signs проверены
+- [ ] Prediction зафиксирован ДО терапии
+- [ ] Decision записан
+- [ ] Outcome заполнен через 7-14 дней
+
+---
+
+## NOTES FOR OPERATORS
+
+**Важно:**
+1. Заполняйте Section F (PREDICTION) ПЕРЕД началом терапии
+2. Не редактируйте derived parameters — они считаются автоматически
+3. notes_raw — только контекст, НЕ для анализа
+4. Outcome обязателен для расчёта метрик
+
+**Связь с RULE-001:**
+- Этот шаблон обеспечивает structured capture для правила
+- prediction.rule_verdict = вывод evaluate_rule_001()
+- outcome.classification = TP/FP/FN для метрик

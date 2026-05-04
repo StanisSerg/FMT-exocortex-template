@@ -1,0 +1,233 @@
+meta:
+  source: "CNCPS 2025"
+  title: "Рекомендации по питанию для сухостойных и лактирующих голштинских коров"
+  authors: "T. R. Overton, M. E. Van Amburgh, L. E. Chase"
+  institution: "Cornell University"
+  updated: "2025-06"
+  language: "ru"
+  note: "Концентрации указаны в % СВ, если не указано иное. PPM = мг/кг."
+
+groups:
+  dry_phase_1:
+    name: "Сухостойные (1-я фаза)"
+    name_en: "Dry cows (far-off)"
+    dim_range: "-60 до -21 дней"
+    dmi:
+      lb_day: "28-30"
+      kg_day: "~13"
+    energy:
+      ne_mcal_lb: "0.80-0.90"
+      ne_mcal_kg: "1.8-2.0"
+      ne_balance_pct: "100-120"
+    protein:
+      cp_pct_dm: "<16"
+      nh3_balance_pct: "<200"
+      mp_g_day: "1000-1100"
+      mp_g_lb: "35-40"
+      mp_balance_pct: "110-120"
+      mp_from_bacteria_pct: "нет рек."
+      met_pct_mp: "нет рек."
+      lys_pct_mp: "нет рек."
+      met_g_ak_mcal_ne: "нет рек."
+      lys_g_ak_mcal_ne: "нет рек."
+    carbohydrates:
+      ndf_optimum_pct_bw: "0.7-0.8"
+      pe_ndf_pct_dm: "30-40"
+      total_ndf_pct_dm: "46-54"
+      starch_pct_dm: "<13"
+      sugar_pct_dm: "<3"
+      nsc_pct_dm: "20-30"
+    fats:
+      total_fat_optimum_pct_dm: "3.5"
+      total_fat_max_pct_dm: "4.5"
+    macro_minerals_pct_dm:
+      Ca: "0.5-0.7"
+      P: "0.3-0.35"
+      Mg: "0.2-0.25"
+      K: "<2.0"
+      Na: "0.10-0.20"
+      Cl: "0.4-0.8"
+      S: "0.3"
+    micro_minerals_ppm:
+      Se: "0.3"
+      Co: "0.3"
+      I: "0.8"
+      Cu: "12-15"
+      Mn: "60-80"
+      Zn: "60-80"
+      Fe: "50"
+    vitamins_iu:
+      A: 75000
+      D: 25000
+      E: 500
+    notes:
+      - "DCAD: не указан специфически для 1-й фазы"
+      - "Fe обычно не добавляется (загрязнение почвой)"
+
+  dry_phase_2:
+    name: "Сухостойные (2-я фаза / транзитные)"
+    name_en: "Dry cows (close-up / transition)"
+    dim_range: "-21 до отёла"
+    dmi:
+      lb_day: "27-29"
+      kg_day: "~13"
+    energy:
+      ne_mcal_lb: "0.90-1.0"
+      ne_mcal_kg: "2.1-2.2"
+      ne_balance_pct: "110-130"
+    protein:
+      cp_pct_dm: "<15"
+      nh3_balance_pct: "<180"
+      mp_g_day: "1200-1400"
+      mp_g_lb: "40-45"
+      mp_balance_pct: "110-120"
+      mp_from_bacteria_pct: ">50"
+      met_pct_mp: "2.60-2.80"
+      lys_pct_mp: "6.80-7.00"
+      met_g_ak_mcal_ne: "нет рек."
+      lys_g_ak_mcal_ne: "нет рек."
+    carbohydrates:
+      ndf_optimum_pct_bw: "0.6-0.7"
+      pe_ndf_pct_dm: "28-35"
+      total_ndf_pct_dm: "40-45"
+      starch_pct_dm: "16-18"
+      sugar_pct_dm: "3-7"
+      nsc_pct_dm: "30-34"
+    fats:
+      total_fat_optimum_pct_dm: "3.5"
+      total_fat_max_pct_dm: "4.5"
+    macro_minerals_pct_dm:
+      Ca: "1.5"
+      P: "0.27-0.35"
+      Mg: "0.45-0.50"
+      K: "<1.3"
+      Na: "0.10-0.20"
+      Cl: "0.4-0.8"
+      S: "0.35-0.45"
+    micro_minerals_ppm:
+      Se: "0.3"
+      Co: "0.4"
+      I: "0.8"
+      Cu: "12-15"
+      Mn: "60-80"
+      Zn: "60-80"
+      Fe: "50"
+    vitamins_iu:
+      A: 75000
+      D: 30000
+      E: 1800
+    notes:
+      - "DCAD: увеличьте S до 0.35-0.45% и используйте S и Cl для титрования pH мочи до 5.5-6.0"
+      - "При синтетическом цеолите А: уменьшите Ca до 0.6-0.7"
+
+  fresh:
+    name: "Новотельные"
+    name_en: "Fresh cows"
+    dim_range: "0-21 день лактации"
+    dmi:
+      lb_day: "42+"
+      kg_day: "19+"
+    energy:
+      ne_mcal_lb: "~1.0-1.1"
+      ne_mcal_kg: "~2.3"
+      ne_balance_pct: "80-90"
+    protein:
+      cp_pct_dm: "<18"
+      nh3_balance_pct: "110-150"
+      mp_g_day: "Н/Д"
+      mp_g_lb: "55-60"
+      mp_balance_pct: "95-110"
+      mp_from_bacteria_pct: ">45"
+      met_pct_mp: "2.60-2.80"
+      lys_pct_mp: "6.80-7.00"
+      met_g_ak_mcal_ne: "~1.15"
+      lys_g_ak_mcal_ne: "~3.1"
+    carbohydrates:
+      ndf_optimum_pct_bw: "0.8-0.9"
+      pe_ndf_pct_dm: "23-24"
+      total_ndf_pct_dm: "28-35"
+      starch_pct_dm: "22-28"
+      sugar_pct_dm: "4-7"
+      nsc_pct_dm: "35-42"
+    fats:
+      total_fat_optimum_pct_dm: "4.0-4.5"
+      total_fat_max_pct_dm: "5.0-5.5"
+    macro_minerals_pct_dm:
+      Ca: "0.9-1.0"
+      P: "0.35-0.42"
+      Mg: "0.35-0.45"
+      K: "1.5-2.0"
+      Na: "0.3-0.6"
+      Cl: "0.3-0.4"
+      S: "0.20-0.25"
+    micro_minerals_ppm:
+      Se: "0.3"
+      Co: "0.25-0.35"
+      I: "0.7-0.9"
+      Cu: "12-15"
+      Mn: "50-60"
+      Zn: "70-80"
+      Fe: "50"
+    vitamins_iu:
+      A: 75000
+      D: 30000
+      E: 750
+    notes:
+      - "Энергетический баланс 80-90% — дефицит допустим для mobilization body reserves"
+      - "Urea cost < 0.5 Мкал/день"
+
+  high_producing:
+    name: "Высокопродуктивные"
+    name_en: "High-producing cows"
+    dim_range: "21-150 дней лактации"
+    dmi:
+      lb_day: "52+"
+      kg_day: "23+"
+    energy:
+      ne_mcal_lb: "~1.1-1.2"
+      ne_mcal_kg: "~2.4-2.6"
+      ne_balance_pct: "100-110"
+    protein:
+      cp_pct_dm: "15-17"
+      nh3_balance_pct: "110-150"
+      mp_g_day: "Н/Д"
+      mp_g_lb: "50-55"
+      mp_balance_pct: "100-110"
+      mp_from_bacteria_pct: ">45"
+      met_pct_mp: "2.60-2.80"
+      lys_pct_mp: "6.80-7.00"
+      met_g_ak_mcal_ne: "~1.15"
+      lys_g_ak_mcal_ne: "~3.1"
+    carbohydrates:
+      ndf_optimum_pct_bw: "0.9-1.0"
+      pe_ndf_pct_dm: "22-23"
+      total_ndf_pct_dm: "28-35"
+      starch_pct_dm: "24-28"
+      sugar_pct_dm: "4-7"
+      nsc_pct_dm: "35-42"
+    fats:
+      total_fat_optimum_pct_dm: "4.5-5.0"
+      total_fat_max_pct_dm: "5.5-6.0"
+    macro_minerals_pct_dm:
+      Ca: "0.70-0.80"
+      P: "0.35-0.40"
+      Mg: "0.25-0.35"
+      K: "1.5-2.0"
+      Na: "0.25-0.4"
+      Cl: "0.25-0.35"
+      S: "0.20-0.25"
+    micro_minerals_ppm:
+      Se: "0.3"
+      Co: "0.20-0.30"
+      I: "0.4-0.6"
+      Cu: "12-15"
+      Mn: "40-50"
+      Zn: "55-70"
+      Fe: "50"
+    vitamins_iu:
+      A: 75000
+      D: 30000
+      E: 500
+    notes:
+      - "Urea cost < 0.5 Мкал/день"
+      - "Оптимальный уровень жира 4.5-5.0% для высоких удоев"

@@ -1,0 +1,6 @@
+fix: Windows/WSL compatibility — hardcoded paths and encoding
+
+- Replace hardcoded d:/Exocortex-V2/... and /root/IWE/... in Python scripts
+  with Path(__file__) relative discovery
+- herd_loader.py: utf-8 -> utf-8-sig for Excel BOM compatibility
+- Replace /home/asus/ with $HOME in SoTA markdown files
