@@ -16,3 +16,6 @@
 [submodule "SPF"]
 	path = SPF
 	url = https://github.com/TserenTserenov/SPF.git
+[submodule "FMT-exocortex-template"]
+	path = FMT-exocortex-template
+	url = https://github.com/StanisSerg/Exocortex-V2.git

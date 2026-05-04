@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.extractor.inbox-check</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/home/asus/IWE/.iwe-runtime/roles/extractor/scripts/extractor.sh</string>
+        <string>inbox-check</string>
+    </array>
+
+    <key>StartInterval</key>
+    <integer>10800</integer>
+
+    <key>StandardOutPath</key>
+    <string>/home/asus/logs/extractor/launchd-inbox-check.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/home/asus/logs/extractor/launchd-inbox-check-error.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>HOME</key>
+        <string>/home/asus</string>
+        <key>IWE_TEMPLATE</key>
+        <string>/home/asus/IWE/FMT-exocortex-template</string>
+        <key>IWE_WORKSPACE</key>
+        <string>/home/asus/IWE</string>
+        <key>IWE_RUNTIME</key>
+        <string>/home/asus/IWE/.iwe-runtime</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>

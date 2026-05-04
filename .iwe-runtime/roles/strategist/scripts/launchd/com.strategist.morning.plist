@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.strategist.morning</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/home/asus/IWE/.iwe-runtime/roles/strategist/scripts/strategist.sh</string>
+        <string>morning</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>4</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>StandardOutPath</key>
+    <string>/home/asus/logs/strategist/launchd-morning.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/home/asus/logs/strategist/launchd-morning-error.log</string>
+
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>HOME</key>
+        <string>/home/asus</string>
+        <key>IWE_TEMPLATE</key>
+        <string>/home/asus/IWE/FMT-exocortex-template</string>
+        <key>IWE_WORKSPACE</key>
+        <string>/home/asus/IWE</string>
+        <key>IWE_RUNTIME</key>
+        <string>/home/asus/IWE/.iwe-runtime</string>
+        <key>IWE_GOVERNANCE_REPO</key>
+        <string>DS-strategy</string>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <true/>
+</dict>
+</plist>
