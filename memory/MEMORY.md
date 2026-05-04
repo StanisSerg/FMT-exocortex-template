@@ -46,3 +46,14 @@
 | Урок WP Gate | `memory/wp-gate-lesson.md` |
 | **Системно-специфичное** | **→ repo/CLAUDE.md** |
 | Стратег | `DS-strategist/README.md` |
+
+---
+
+## Day Close: 2026-05-04
+
+**WP-97:** Создание модуля воспроизводства
+- Добавлены 4 аналитических документа в Materials:
+  - AgSource 2025 Holstein Averages: полный анализ + логика перцентилей + бенчмарки 700+
+  - HW1 Spreadsheet: разбор формул Partial Budget (3 листа)
+- DS-cattle-course запушен: b9077aa
+- Root IWE: c0520cb (day close, .gitignore update)
