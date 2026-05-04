@@ -1,0 +1,16 @@
+# IWE generated / sensitive files
+.exocortex.env
+.iwe-runtime/
+.iwe-runtime.lock
+CLAUDE.md
+.claude.md.base
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
