@@ -14,3 +14,15 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+__pycache__/
+
+# Claude / Kimi derived files
+.claude/
+.continue/
+.mcp.json
+.tmp-venv/
+
+# Temporary / local files
+OLLAMA-WINDOWS-SETUP.md
+update-continue-ollama.sh
+zstd_*.deb
