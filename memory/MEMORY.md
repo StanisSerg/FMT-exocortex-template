@@ -16,13 +16,19 @@
 
 ---
 
-## РП текущей недели (W{N}: DD–DD мес)
+## РП текущей недели (W19: 5–11 мая)
 
 > Порядок: in_progress → pending → done.
+> WeekPlan: `DS-strategy/current/WeekPlan-W19-2026-05-05.md`
 
 | # | РП | Бюджет | Статус | Дедлайн |
 |---|-----|--------|--------|---------|
-| 1 | Первая стратегическая сессия | 1h | pending | — |
+| 93 | Создание Decision Layer — тестирование + интеграция | 4h | in_progress | — |
+| 83 | Methods PACK — создание шаблонов методов | 3h | pending | — |
+| 75 | SoTA Ingestion — сессия 2 (10 статей) | 3h | in_progress | — |
+| 94 | Изучение FPF — разбор принципов | 2h | pending | — |
+| 1 | Саморазвитие — 1 principle → capture | 1h | pending | — |
+| 96 | Создание модуля «НДК» — доработка | 1h | in_progress | — |
 
 ---
 
