@@ -28,6 +28,7 @@
 | 75 | SoTA Ingestion — сессия 2 (10 статей) | 3h | in_progress | — |
 | 94 | Изучение FPF — разбор принципов | 2h | pending | — |
 | 1 | Саморазвитие — 1 principle → capture | 1h | pending | — |
+| 97 | Создание модуля воспроизводства для DS-cattle-course | 6h | in_progress | — |
 | 96 | Создание модуля «НДК» — доработка | 1h | in_progress | — |
 
 ---
