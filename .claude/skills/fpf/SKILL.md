@@ -22,6 +22,7 @@ Pack (предметное) → SPF (корректность) → FPF (перв
 | **review** | «Проверь», «сверь с FPF», артефакт для проверки | Загрузи артефакт + релевантные принципы → сверка пункт за пунктом → findings |
 | **design** | «Спроектируй», «как сделать по FPF», задача проектирования | Подбери применимые паттерны (A.1 границы, A.6 состав, A.7 различения, B.5 ADI) → конкретные рекомендации |
 | **characterize** | «Сравни», «оцени варианты», «как выбрать» | A.17-A.19 (Lawful Comparison): критерии → индикаторы → оценка вариантов по одинаковой шкале |
+| **prioritize** | «наиболее важны», «для роли», «в роли», «для меня как» | Определи роль из аргумента → найди принципы FPF/Pack, релевантные этой роли → ранжируй по применимости → объясни почему каждый важен именно для этой роли |
 
 **БЛОКИРУЮЩЕЕ — No-Jargon:** Каждый FPF-термин в output → engineering-эквивалент в скобках или вместо. Без исключений.
 - Известные: `memory/fpf-reference.md` § Трансляция (Holon, F-G-R, Alpha, Mereology, Affordance, ADI...)
@@ -37,10 +38,10 @@ Pack (предметное) → SPF (корректность) → FPF (перв
    - Форма, процесс, корректность → source=SPF
    - Базовые различения, первые принципы → source=FPF
 
-3. **Ищи через Gateway (iwe-knowledge):**
-   - `knowledge_search(query="<запрос>", source_type="pack")` -- по всем Pack
-   - `knowledge_search(query="<запрос>", source="SPF")` -- по SPF
-   - `knowledge_search(query="<запрос>", source="FPF")` -- по FPF
+3. **Ищи через iwe-knowledge:**
+   - `iwe-knowledge search(query="<запрос>", source_type="pack")` -- по всем Pack
+   - `iwe-knowledge search(query="<запрос>", source="SPF")` -- по SPF
+   - `iwe-knowledge search(query="<запрос>", source="FPF")` -- по FPF
    - Если первый уровень не дал результатов -- спускайся по fallback chain
 
 4. **Если iwe-knowledge недоступен** (нет в `/mcp`):
