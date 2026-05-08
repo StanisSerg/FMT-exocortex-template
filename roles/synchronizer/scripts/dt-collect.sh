@@ -313,7 +313,7 @@ if os.path.exists(memory_path):
                 in_table = True
                 continue
             if in_table:
-                if line.strip() == '' or line.startswith('---'):
+                if line.strip() == '' or line.startswith('---') or line.startswith('>'):
                     in_table = False
                     continue
                 # Read ✅ emoji (done marker per formatting.md)
