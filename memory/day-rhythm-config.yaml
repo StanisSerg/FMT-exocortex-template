@@ -24,7 +24,7 @@ news:
 video:
   enabled: true                 # Enable video scanning at Day Open
   directories:
-    - ~/Videos/Meetings         # Default meetings directory
+    - /home/asus/IWE/PACK-cattle-science/video  # Video conferences
   # Examples:
   #   - ~/Documents/Zoom
   #   - ~/Documents/Телемост
