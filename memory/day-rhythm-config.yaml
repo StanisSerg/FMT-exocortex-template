@@ -22,8 +22,9 @@ news:
       feeds: []
 
 video:
-  enabled: false                # Enable video scanning at Day Open
-  directories: []               # Local directories with video recordings
+  enabled: true                 # Enable video scanning at Day Open
+  directories:
+    - ~/Videos/Meetings         # Default meetings directory
   # Examples:
   #   - ~/Documents/Zoom
   #   - ~/Documents/Телемост
