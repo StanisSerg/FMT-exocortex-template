@@ -8,7 +8,7 @@
 # === Протоколы ===
 
 # Day Open: проверка видео за предыдущий день
-video_check: true
+video_check: false
 
 # Day Close: расчёт мультипликатора IWE (требует WakaTime API key)
 multiplier_enabled: true
