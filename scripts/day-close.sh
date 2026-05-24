@@ -15,6 +15,15 @@ if [ -d "$MEMORY_DIR" ]; then
     mkdir -p "$BACKUP_DIR"
     cp -r "$MEMORY_DIR" "$BACKUP_DIR/memory-$(date +%Y%m%d-%H%M%S)"
     echo "[day-close]   backup=OK → $BACKUP_DIR"
+    # Ротация: хранить только 14 последних бэкапов
+    ROTATE_COUNT=14
+    ROTATE_DELETED=$(ls -1dt "$BACKUP_DIR"/memory-* 2>/dev/null | tail -n +$((ROTATE_COUNT + 1)) | wc -l)
+    if [ "$ROTATE_DELETED" -gt 0 ]; then
+        ls -1dt "$BACKUP_DIR"/memory-* 2>/dev/null | tail -n +$((ROTATE_COUNT + 1)) | xargs -r rm -rf
+        echo "[day-close]   rotate=OK — удалено $ROTATE_DELETED старых бэкапа (храним $ROTATE_COUNT)"
+    else
+        echo "[day-close]   rotate=OK — бэкапов ≤$ROTATE_COUNT, удалять нечего"
+    fi
 else
     echo "[day-close]   backup=SKIP — $MEMORY_DIR не найден"
 fi
