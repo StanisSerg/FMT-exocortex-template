@@ -24,6 +24,7 @@ description: "Операционный файл памяти IWE"
 | Правила по типам репо | `memory/repo-type-rules.md` |
 | Чеклисты | `memory/checklists.md` |
 | SOTA-практики (18 шт.) | `memory/sota-reference.md` |
+| Курсы системного мышления (Aisystant) | `memory/navigation-aisystant.md` |
 | Протокол Open (WP Gate, Ритуал) | `memory/protocol-open.md` |
 | Протокол Close (маршрутизация, Quick Close) | `memory/protocol-close.md` |
 | Day Close (полный алгоритм) | `.claude/skills/day-close/SKILL.md` |
