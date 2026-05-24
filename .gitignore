@@ -28,3 +28,4 @@ update-continue-ollama.sh
 zstd_*.deb
 .secrets/*
 !.secrets/README.md
+exocortex/
