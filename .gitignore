@@ -26,3 +26,5 @@ __pycache__/
 OLLAMA-WINDOWS-SETUP.md
 update-continue-ollama.sh
 zstd_*.deb
+.secrets/*
+!.secrets/README.md
