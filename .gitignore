@@ -29,3 +29,5 @@ zstd_*.deb
 .secrets/*
 !.secrets/README.md
 exocortex/
+scripts/iwe-audit-*.log
+personal-guide/
