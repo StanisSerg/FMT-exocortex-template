@@ -19,3 +19,6 @@
 [submodule "FMT-exocortex-template"]
 	path = FMT-exocortex-template
 	url = https://github.com/StanisSerg/Exocortex-V2.git
+[submodule "DS-aisystant-docs"]
+	path = DS-aisystant-docs
+	url = https://github.com/aisystant/docs.git
