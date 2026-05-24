@@ -15,7 +15,7 @@ related: DP.SC.036, DP.KR.001
 
 > **Принцип:** сначала этот файл. Miss или сомнение → `memory/repo-type-rules.md` (slow-path, universal).
 > Source of truth — `memory/repo-type-rules.md`. Этот файл — fast-path проекция. При расхождении — repo-type-rules.md побеждает.
-> **Настройка:** замените `DS-strategy`, `PACK-cattle-science`, `SPF` именами ваших репо.
+> **Настройка:** замените `DS-strategy`, `DS-agent-workspace`, `DS-agent-workspace` именами ваших репо.
 > **Обновление:** при каждом инциденте неверного размещения добавить строку + дату.
 
 ---
@@ -36,14 +36,14 @@ related: DP.SC.036, DP.KR.001
 
 ---
 
-## Встречи и обсуждения (PACK-cattle-science)
+## Встречи и обсуждения (DS-agent-workspace)
 
 | Фраза / Тип | Путь | Naming | Примечание |
 |-------------|------|--------|------------|
-| **Повестка встречи** (с командой / внешним) | `PACK-cattle-science/0.OPS/0.9.Inbox/YYYY-MM-DD-<тема>-agenda.md` | `2026-05-12-wp150-architect-agenda.md` | ⚠️ НЕ DS-strategy/inbox/ — это для WP-context! |
-| **Предложение** (proposal, архитектурный вариант) | `PACK-cattle-science/0.OPS/0.9.Inbox/YYYY-MM-DD-<тема>-proposal.md` | | |
-| **Протокол встречи** (meeting minutes) | `PACK-cattle-science/0.OPS/0.7.Plans-and-Meetings/YYYY-MM-DD-<тема>.md` | | |
-| **Материал к обсуждению** (вопросы, схемы, варианты) | `PACK-cattle-science/0.OPS/0.9.Inbox/<slug>.md` | тематический | Lifecycle: обсудили → решения в ADR/Pack → архив |
+| **Повестка встречи** (с командой / внешним) | `DS-agent-workspace/0.OPS/0.9.Inbox/YYYY-MM-DD-<тема>-agenda.md` | `2026-05-12-wp150-architect-agenda.md` | ⚠️ НЕ DS-strategy/inbox/ — это для WP-context! |
+| **Предложение** (proposal, архитектурный вариант) | `DS-agent-workspace/0.OPS/0.9.Inbox/YYYY-MM-DD-<тема>-proposal.md` | | |
+| **Протокол встречи** (meeting minutes) | `DS-agent-workspace/0.OPS/0.7.Plans-and-Meetings/YYYY-MM-DD-<тема>.md` | | |
+| **Материал к обсуждению** (вопросы, схемы, варианты) | `DS-agent-workspace/0.OPS/0.9.Inbox/<slug>.md` | тематический | Lifecycle: обсудили → решения в ADR/Pack → архив |
 
 ---
 
@@ -59,9 +59,9 @@ related: DP.SC.036, DP.KR.001
 
 | Фраза / Тип | Путь | Naming | Примечание |
 |-------------|------|--------|------------|
-| **Bug report** (ошибка IWE/платформы) | `<governance-repo>/inbox/bugs/bug-YYYY-MM-DD-<тема>.md` | `bug-2026-05-12-routing-gate-miss.md` | governance-репо = DS-strategy или PACK-cattle-science |
-| **Инцидент** (разбор сбоя) | `PACK-cattle-science/C.IT-Platform/C2.IT-Platform/C2.3.Operations/Incidents/` | папка `YYYY-MM-DD-<slug>/` | |
-| **Security posture** (dashboard) | `PACK-cattle-science/C.IT-Platform/C2.IT-Platform/C2.2.Architecture/security-posture.md` | Один файл | |
+| **Bug report** (ошибка IWE/платформы) | `<governance-repo>/inbox/bugs/bug-YYYY-MM-DD-<тема>.md` | `bug-2026-05-12-routing-gate-miss.md` | governance-репо = DS-strategy или DS-agent-workspace |
+| **Инцидент** (разбор сбоя) | `DS-agent-workspace/C.IT-Platform/C2.IT-Platform/C2.3.Operations/Incidents/` | папка `YYYY-MM-DD-<slug>/` | |
+| **Security posture** (dashboard) | `DS-agent-workspace/C.IT-Platform/C2.IT-Platform/C2.2.Architecture/security-posture.md` | Один файл | |
 
 ---
 
@@ -107,9 +107,9 @@ related: DP.SC.036, DP.KR.001
 
 | Фраза / Тип | Путь | Naming | Примечание |
 |-------------|------|--------|------------|
-| **SQL миграция** сервиса | `SPF/<service>/migrations/NNN-*.sql` | `0012-add-consent-column.sql` | |
-| **Ad-hoc SQL** (one-off бэкфилл) | `SPF/<service>/scripts/` | `backfill-YYYY-MM-DD-*.sql` | Удалить после выполнения |
-| **ADR** (архитектурное решение) | `PACK-cattle-science/.../decisions/ADR-NNN-<slug>.md` | | |
+| **SQL миграция** сервиса | `DS-agent-workspace/<service>/migrations/NNN-*.sql` | `0012-add-consent-column.sql` | |
+| **Ad-hoc SQL** (one-off бэкфилл) | `DS-agent-workspace/<service>/scripts/` | `backfill-YYYY-MM-DD-*.sql` | Удалить после выполнения |
+| **ADR** (архитектурное решение) | `DS-agent-workspace/.../decisions/ADR-NNN-<slug>.md` | | |
 
 ---
 
@@ -123,4 +123,4 @@ related: DP.SC.036, DP.KR.001
 ---
 
 *Создано: 2026-05-12 (WP-216 Ф4/Ф5, промоция в FMT-exocortex-template). Обновлять при инцидентах маршрутизации.*
-*Заменить плейсхолдеры: DS-strategy → имя вашего governance-репо, PACK-cattle-science → имя ecosystem-репо, SPF → папка/репо с инструментами.*
+*Заменить плейсхолдеры: DS-strategy → имя вашего governance-репо, DS-agent-workspace → имя ecosystem-репо, DS-agent-workspace → папка/репо с инструментами.*
