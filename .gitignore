@@ -31,3 +31,5 @@ zstd_*.deb
 exocortex/
 scripts/iwe-audit-*.log
 personal-guide/
+.tmp-tools/
+.tmp-venv-whisper/
