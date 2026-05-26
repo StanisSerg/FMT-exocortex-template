@@ -1,21 +1,101 @@
+diff --git a/.claude/skills/iwe-update/SKILL.md b/.claude/skills/iwe-update/SKILL.md
+index 289beff..b6b812a 100644
+--- a/.claude/skills/iwe-update/SKILL.md
++++ b/.claude/skills/iwe-update/SKILL.md
+@@ -4,6 +4,9 @@ description: "Обновление IWE с объяснением изменен
+ argument-hint: ""
+ user_invocable: true
+ version: 1.0.0
++routing:
++  executor: haiku
++  deterministic: false
+ ---
+ 
+ # IWE Update (агент-обновитель)
+@@ -18,7 +21,7 @@ version: 1.0.0
+ Запустить update.sh в режиме превью:
+ 
+ ```bash
+-cd "$IWE_TEMPLATE" && bash update.sh --check 2>&1
++bash "$IWE_ROOT/scripts/iwe-update.sh" --check 2>&1
+ ```
+ 
+ Из вывода извлечь:
+@@ -77,7 +80,7 @@ ls extensions/*.md 2>/dev/null
+ Если пользователь одобрил (или `--yes`):
+ 
+ ```bash
+-cd "$IWE_TEMPLATE" && bash update.sh --yes 2>&1
++bash "$IWE_ROOT/scripts/iwe-update.sh" --yes 2>&1
+ ```
+ 
+ Из вывода извлечь результат:
 diff --git a/scripts/iwe-audit.sh b/scripts/iwe-audit.sh
-index 01af915..2b2bece 100755
+index aab242a..2b2bece 100755
 --- a/scripts/iwe-audit.sh
 +++ b/scripts/iwe-audit.sh
-@@ -188,7 +188,7 @@ GOV_REPO="${IWE_GOVERNANCE_REPO:-DS-strategy}"
- DS_DIR="$IWE_ROOT/$GOV_REPO"
+@@ -1,4 +1,6 @@
+ #!/usr/bin/env bash
++# routing: helper  skill=audit-installation  called-by=haiku  deterministic=true
++# see DP.SC.159, DP.ROLE.059
+ # iwe-audit.sh — оркестратор аудита инсталляции IWE
+ #
+ # WP-265 Ф2, 2026-04-26.
+@@ -181,21 +183,21 @@ fi
+ # params.yaml — конфиг
+ emit_inventory_row "params.yaml" 1 ""
+ 
+-# DS-strategy — директория с .git
+-_GOV_REPO="${IWE_GOVERNANCE_REPO:-DS-strategy}"
+-DS_DIR="$IWE_ROOT/$_GOV_REPO"
++# Governance-репо — директория с .git
++GOV_REPO="${IWE_GOVERNANCE_REPO:-DS-strategy}"
++DS_DIR="$IWE_ROOT/$GOV_REPO"
  TOTAL=$((TOTAL + 1))
  if [ -d "$DS_DIR" ]; then
 -    if [ -d "$DS_DIR/.git" ]; then
 +    if git -C "$DS_DIR" rev-parse --git-dir >/dev/null 2>&1; then
          FOUND=$((FOUND + 1))
-         printf "| \`%s\` | %s | %s |\n" "$GOV_REPO/" "✅" "git-репо (is_git=true)"
+-        printf "| \`%s\` | %s | %s |\n" "$_GOV_REPO/" "✅" "git-репо (is_git=true)"
++        printf "| \`%s\` | %s | %s |\n" "$GOV_REPO/" "✅" "git-репо (is_git=true)"
      else
+         OPTIONAL_MISSING=$((OPTIONAL_MISSING + 1))
+-        printf "| \`%s\` | %s | %s |\n" "$_GOV_REPO/" "⚠️" "директория есть, но не git-репо"
++        printf "| \`%s\` | %s | %s |\n" "$GOV_REPO/" "⚠️" "директория есть, но не git-репо"
+     fi
+ else
+     CRITICAL_MISSING=$((CRITICAL_MISSING + 1))
+-    printf "| \`%s\` | %s | %s |\n" "$_GOV_REPO/" "❌" "директория не найдена"
++    printf "| \`%s\` | %s | %s |\n" "DS-strategy/" "❌" "директория не найдена"
+ fi
+ 
+ echo ""
+@@ -234,11 +236,11 @@ echo ""
+ 
+ # ---------- Раздел 3: DS-strategy ----------
+ 
+-echo "## 3. $_GOV_REPO"
++echo "## 3. DS-strategy"
+ echo ""
+ 
+ if [ ! -d "$DS_DIR/.git" ]; then
+-    echo "❌ \`$_GOV_REPO\` не git-репо (или директория отсутствует)"
++    echo "❌ \`DS-strategy\` не git-репо (или директория отсутствует)"
+ else
+     set +e
+     DS_STATUS=$(git -C "$DS_DIR" status --short 2>&1)
 diff --git a/scripts/iwe-drift.sh b/scripts/iwe-drift.sh
-index 11b7c06..2afdddb 100755
+index cc375ff..2afdddb 100755
 --- a/scripts/iwe-drift.sh
 +++ b/scripts/iwe-drift.sh
-@@ -23,6 +23,13 @@
+@@ -1,4 +1,6 @@
+ #!/usr/bin/env bash
++# routing: helper  skill=iwe-rules-review  called-by=haiku  deterministic=true
++# see DP.SC.159, DP.ROLE.059
+ # iwe-drift.sh — MVP drift-отчёт по .claude/sync-manifest.yaml
+ #
+ # WP-217 Ф3b, черновик 2026-04-10.
+@@ -21,6 +23,13 @@
  
  set -eu
  
@@ -29,7 +109,7 @@ index 11b7c06..2afdddb 100755
  IWE_ROOT="${IWE_ROOT:-$HOME/IWE}"
  MANIFEST="${MANIFEST:-$IWE_ROOT/.claude/sync-manifest.yaml}"
  MODE="all"
-@@ -73,7 +80,7 @@ dir_newest_mtime_days_ago() {
+@@ -71,7 +80,7 @@ dir_newest_mtime_days_ago() {
      fi
      local newest
      newest=$(find "$dir" -type f -not -path '*/.git/*' -print0 2>/dev/null \
