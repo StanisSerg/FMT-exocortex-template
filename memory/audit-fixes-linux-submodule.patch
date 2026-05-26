@@ -1,0 +1,40 @@
+diff --git a/scripts/iwe-audit.sh b/scripts/iwe-audit.sh
+index 01af915..2b2bece 100755
+--- a/scripts/iwe-audit.sh
++++ b/scripts/iwe-audit.sh
+@@ -188,7 +188,7 @@ GOV_REPO="${IWE_GOVERNANCE_REPO:-DS-strategy}"
+ DS_DIR="$IWE_ROOT/$GOV_REPO"
+ TOTAL=$((TOTAL + 1))
+ if [ -d "$DS_DIR" ]; then
+-    if [ -d "$DS_DIR/.git" ]; then
++    if git -C "$DS_DIR" rev-parse --git-dir >/dev/null 2>&1; then
+         FOUND=$((FOUND + 1))
+         printf "| \`%s\` | %s | %s |\n" "$GOV_REPO/" "✅" "git-репо (is_git=true)"
+     else
+diff --git a/scripts/iwe-drift.sh b/scripts/iwe-drift.sh
+index 11b7c06..2afdddb 100755
+--- a/scripts/iwe-drift.sh
++++ b/scripts/iwe-drift.sh
+@@ -23,6 +23,13 @@
+ 
+ set -eu
+ 
++# Determine correct stat format for this OS (macOS -f %m, Linux -c %Y)
++if stat -f %m /dev/null >/dev/null 2>&1; then
++    STAT_FMT="-f %m"
++else
++    STAT_FMT="-c %Y"
++fi
++
+ IWE_ROOT="${IWE_ROOT:-$HOME/IWE}"
+ MANIFEST="${MANIFEST:-$IWE_ROOT/.claude/sync-manifest.yaml}"
+ MODE="all"
+@@ -73,7 +80,7 @@ dir_newest_mtime_days_ago() {
+     fi
+     local newest
+     newest=$(find "$dir" -type f -not -path '*/.git/*' -print0 2>/dev/null \
+-        | xargs -0 stat -f %m 2>/dev/null \
++        | xargs -0 stat $STAT_FMT 2>/dev/null \
+         | sort -nr | head -1)
+     if [ -z "${newest:-}" ]; then
+         echo "-1"
