@@ -2,7 +2,7 @@
 # see DP.SC.153
 # НЕ редактировать вручную — перегенерировать через generate-skills-catalog.sh
 #
-generated: 2026-05-30T08:22:01Z
+generated: 2026-05-30T14:57:03Z
 skills_dir: .claude/skills
 
 skills:
@@ -252,11 +252,12 @@ skills:
   - id: personal-guide-render
     name: "personal-guide-render"
     description: "Собирает (или пересобирает) персональное руководство в УЖЕ существующем репо `personal-guide` (плоское имя, один на пилота) — читает RCS из Память.Derived, выбирает заготовки stage×domain, пишет 6 файлов через personal_write. Используй когда пилот просит «пересобери руководство», «обнови мой план», «обнови methods» — или когда репо создан, а контента ещё нет."
-    version: 0.0.0
-    layer: unknown
+    version: 1.0.0
+    layer: L1
     status: active
     triggers:
-      slash: []
+      slash:
+        - /personal-guide-render
     depends_on: []
     invoked_by:
     - lesson-close
