@@ -53,6 +53,20 @@ routing:
 
 Если РП найден → продолжать без ожидания.
 
+**Определение рекомендуемой модели писателя (WP-394 Ф4.6):**
+```
+# informational — pilot selects model at Claude Code startup, not auto-applied here
+verification_class = из WP контекста или из описания задачи
+WRITER_MODEL_RECOMMENDED = "sonnet"   # default: закрытые задачи с тестами/чёткой проверкой
+if verification_class in ("open-loop", "problem-framing"):
+    WRITER_MODEL_RECOMMENDED = "opus"
+```
+Анонсировать пилоту:
+```
+Модель писателя (рекомендуется): <WRITER_MODEL_RECOMMENDED>
+(Класс задачи: <verification_class>. Выбери модель при запуске Claude Code.)
+```
+
 ---
 
 ## Шаг 1. Инициализация
@@ -98,6 +112,7 @@ implementation_pipeline: false
 review_iterations: 0
 verify_status: ""
 deploy_shas: {}
+writer_model_recommended: "sonnet"  # informational — pilot selects model at startup, not auto-applied; opus only for open-loop|problem-framing
 # Sequential role-discovery (WP-367) — заполняется во время Opening:
 # Если пилот задал явно — сразу заполни `roles`.
 # Если не задал — initiator в ход 0 заполняет `proposed_roles` в frontmatter 00-writer.md;

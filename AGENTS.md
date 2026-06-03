@@ -285,6 +285,24 @@ The pilot reads agent responses as a human, not as a CI inspector. Twelve patter
 
 Детали: memory-lifecycle-spec.md.
 
+## IWE Instructions Level (Kimi headless)
+
+# IWE workspace with 5000+ docs and multiple Packs — use experienced level.
+# Revisit if a new small repo (< 1000 docs) is added to {{HOME_DIR}}/IWE/.
+When calling `get_instructions` (Aisystant MCP) to load IWE context,
+use `level="experienced"` instead of the default `level="full"`.
+This reduces token load by ~89% (~10K → ~1.1K) on every headless turn.
+
+Example:
+```
+get_instructions(level="experienced")
+```
+
+This applies to all Kimi sessions: peer (via kimi-peer-adapter.sh) and standalone.
+Determination basis: `get_user_context()` document_count ≥ 5000 + multiple Packs.
+
+---
+
 ## Hermes Agent — координация (РП-392, РП-394)
 
 Если в экосистеме присутствует Hermes Agent (оркестратор с персистентной памятью):
