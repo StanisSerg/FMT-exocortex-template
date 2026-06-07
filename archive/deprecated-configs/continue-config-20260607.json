@@ -1,0 +1,28 @@
+{
+  "models": [
+    {
+      "title": "Ollama llama3",
+      "provider": "ollama",
+      "model": "llama3",
+      "apiBase": "http://172.25.16.1:11434"
+    },
+    {
+      "title": "LM Studio Local",
+      "provider": "openai",
+      "model": "qwen/qwen3-14b",
+      "apiBase": "http://172.25.16.1:1234/v1",
+      "apiKey": "lm-studio"
+    }
+  ],
+  "tabAutocompleteModel": {
+    "title": "Tab Autocomplete",
+    "provider": "ollama",
+    "model": "llama3",
+    "apiBase": "http://172.25.16.1:11434"
+  },
+  "embeddingsProvider": {
+    "provider": "ollama",
+    "model": "nomic-embed-text",
+    "apiBase": "http://172.25.16.1:11434"
+  }
+}
