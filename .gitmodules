@@ -22,3 +22,6 @@
 [submodule "DS-aisystant-docs"]
 	path = DS-aisystant-docs
 	url = https://github.com/aisystant/docs.git
+[submodule "DS-fpf-dialogs"]
+	path = DS-fpf-dialogs
+	url = ./DS-fpf-dialogs
