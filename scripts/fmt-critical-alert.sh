@@ -38,8 +38,12 @@ if [ -z "$REPO" ] && [ -n "${GITHUB_USER:-}" ]; then
     REPO="${GITHUB_USER}/FMT-exocortex-template"
 fi
 if [ -z "$REPO" ] && [ -f "${IWE_ROOT:-$HOME/IWE}/params.yaml" ]; then
-    GH_USER=$(grep -E "^github_user:" "${IWE_ROOT:-$HOME/IWE}/params.yaml" 2>/dev/null | sed -E 's/^github_user:[[:space:]]*//; s/^"//; s/"$//')
-    [ -n "$GH_USER" ] && REPO="${GH_USER}/FMT-exocortex-template"
+    FMT_REPO=$(grep -E "^fmt_repo:" "${IWE_ROOT:-$HOME/IWE}/params.yaml" 2>/dev/null | sed -E 's/^fmt_repo:[[:space:]]*//; s/^"//; s/"$//')
+    [ -n "$FMT_REPO" ] && REPO="$FMT_REPO"
+    if [ -z "$REPO" ]; then
+        GH_USER=$(grep -E "^github_user:" "${IWE_ROOT:-$HOME/IWE}/params.yaml" 2>/dev/null | sed -E 's/^github_user:[[:space:]]*//; s/^"//; s/"$//')
+        [ -n "$GH_USER" ] && REPO="${GH_USER}/FMT-exocortex-template"
+    fi
 fi
 if [ -z "$REPO" ]; then
     echo "Error: cannot resolve FMT repo. Set IWE_FMT_REPO or GITHUB_USER env, or add 'github_user: <login>' to params.yaml." >&2

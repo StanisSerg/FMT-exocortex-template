@@ -53,6 +53,14 @@ linear_sync_path: ""
 # Директория с пользовательскими расширениями протоколов
 extensions_dir: extensions
 
+# === GitHub ===
+
+# Логин GitHub (используется скриптами для разрешения репозиториев)
+github_user: StanisSerg
+
+# Репозиторий FMT-exocortex-template для critical/deadline issue alerts
+fmt_repo: TserenTserenov/FMT-exocortex-template
+
 # === Автор шаблона ===
 
 # Авторский режим: разрешает прямое редактирование L1 файлов (protocol-*, skills/)
