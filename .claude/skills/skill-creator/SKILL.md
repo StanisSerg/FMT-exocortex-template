@@ -86,11 +86,16 @@ Check whether `<target_path>/SKILL.md` already exists.
   [ ] algorithm step (add / edit)
   [ ] bundled resource (add scripts/ references/ assets/)
   [ ] полный пересоздать → удалите SKILL.md вручную, затем запустите /skill-creator снова
+  [ ] отмена → ничего не менять
 ```
 
-Collect the pilot's choices. Apply changes directly to the existing `SKILL.md` via Edit. Skip Steps 3–6. Proceed to **Step 7** (register + verify).
+Collect the pilot's choices. Apply changes directly to the existing `SKILL.md` via Edit.
 
-Version bump rule: bump patch for trigger / description edits; bump minor for algorithm changes; bump major for gate or scope changes.
+Skip Steps 3–6 **unless** the pilot selected "bundled resource" or any change that expands the skill's scope or gates — in that case, run **Step 3 (IntegrationGate)** before applying.
+
+For Step 7 (register + verify): run `verify-skill.sh` always. Run `generate-skills-catalog.sh` only if frontmatter changed (name, description, triggers, version).
+
+Version bump rule: bump patch for trigger / description edits; bump minor for algorithm changes **or adding a bundled resource**; bump major for gate or scope changes.
 
 **If it does not exist** → continue to Step 3 (normal creation flow).
 
@@ -195,7 +200,7 @@ before the skill is used in practice.
 - Run `generate-skills-catalog.sh` after writing files (Step 7) — not before, not manually.
 - Do not make the skill verify itself; use `scripts/verify-skill.sh`.
 - Do not skip `verify-skill.sh` after editing an existing skill — always run it after any update.
-- Do not re-scaffold for minor updates (triggers, description, version bump); use Step 2.5 update mode instead.
+- Do not re-scaffold for minor updates (triggers, description, version bump, algorithm); use Step 2.5 update mode instead. Exception: platform or layer change (e.g. Claude→Kimi, L1→L3) requires a new path and a fresh scaffold — delete old SKILL.md first.
 - Do not forget version bump when changing gates, scope, or algorithm steps (bump minor or major).
 
 ## Verification
