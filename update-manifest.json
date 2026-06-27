@@ -57,6 +57,9 @@
       "path": ".claude/hooks/inject-fault-profile.sh"
     },
     {
+      "path": ".claude/hooks/lazy-context-loader.sh"
+    },
+    {
       "path": ".claude/hooks/inject-role-prefixes.sh"
     },
     {
@@ -162,6 +165,9 @@
       "path": ".claude/skills/archgate/SKILL.md"
     },
     {
+      "path": ".claude/skills/author-mode/SKILL.md"
+    },
+    {
       "path": ".claude/skills/artifactor/SKILL.md"
     },
     {
@@ -186,10 +192,16 @@
       "path": ".claude/skills/day-close/SKILL.md"
     },
     {
+      "path": ".claude/skills/day-close/day-close-details.md"
+    },
+    {
       "path": ".claude/skills/day-close/day-close/SKILL.md"
     },
     {
       "path": ".claude/skills/day-open/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/day-open/day-open-details.md"
     },
     {
       "path": ".claude/skills/day-open/templates.md"
@@ -217,6 +229,9 @@
     },
     {
       "path": ".claude/skills/iwe-rules-review/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/integration-gate/SKILL.md"
     },
     {
       "path": ".claude/skills/iwe-update/SKILL.md"
