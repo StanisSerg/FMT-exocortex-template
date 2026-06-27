@@ -171,11 +171,28 @@ Subagent после прогона ритуала анализирует transcr
 | **Block на write-шаге (commit/Write)** после успешных read-шагов | Read-логика работает. Это **ожидаемое поведение** smoke-теста. Verdict: ✅ |
 | **Hook-error** (jq missing и т.п.) | Инфраструктура поломана. Verdict: ❌ |
 
+## Ограничения в Kimi Code CLI
+
+> Актуально для сессий в Kimi Code CLI (в отличие от Claude Code).
+
+Kimi Code CLI **не вызывает PreToolUse hooks из `.claude/settings.json`** и не имеет собственного hook-механизма, аналогичного Claude Code. В репо присутствуют `.kimi/hooks/dry-run-gate.sh`, но они **не интегрированы** в Kimi Code CLI — автоматический вызов не происходит.
+
+Что это значит:
+- Sentinel `/tmp/iwe-dry-run-*.flag` создаётся, но Kimi **не блокирует** автоматически `WriteFile`, `StrReplaceFile`, `Bash` с git commit и т.д.
+- `/audit-installation` и другие dry-run операции в Kimi могут случайно изменить файлы или сделать коммиты.
+- Хук `.kimi/hooks/dry-run-gate.sh` рабочий при ручном запуске, но не защищает от tool-call'ов внутри субагентов.
+
+**Рекомендации:**
+- В Kimi не запускайте dry-run smoke-test'ов ритуалов без явной инструкции субагенту не делать write.
+- Для реальных аудитов используйте Claude Code, где PreToolUse hooks применяются.
+- Если smoke-test в Kimи необходим — явно проверяйте sentinel внутри extension-скриптов и bash-команд.
+
 ## Не входит в контракт
 
 - **Гарантия что ритуал работает корректно содержательно** (pas-fail logic). Это open-loop verification, не closed-loop. Smoke-тест проверяет инициируемость, не правильность.
 - **Покрытие тонких side-effects** — например, скилл может прочитать `/tmp` файл, в нём `mktemp` (создаёт временный файл, формально write). Хук таких не блокирует. Принцип: блокируем то, что меняет user-data, не temp-state.
 - **Защита от malicious extensions.** Контракт работает в условиях добросовестных пилотов. Если extension намеренно обходит хук (например, через `python -c 'open(...,"w")'`) — это вне модели угроз.
+- **Полная защита в Kimi Code CLI.** Контракт рассчитан на Claude Code hooks; в Kimi dry-run требует дополнительных мер (см. «Ограничения в Kimi Code CLI»).
 
 ## История
 
