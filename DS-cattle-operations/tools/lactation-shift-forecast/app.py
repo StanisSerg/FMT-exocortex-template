@@ -58,16 +58,16 @@ with st.sidebar:
     params_by_parity: dict[int, WoodParameters] = {}
     for parity in [1, 2, 3]:
         with st.expander(f"Паритет {parity}", expanded=parity == 2):
+            # Значения берутся из session_state через key; value не задаём,
+            # чтобы избежать конфликта со Session State API.
             a = st.number_input(
                 f"a (паритет {parity})",
-                value=st.session_state.get(f"a_{parity}", DEFAULT_WOOD_PARAMS[parity].a),
                 min_value=0.1,
                 step=0.5,
                 key=f"a_{parity}",
             )
             b = st.number_input(
                 f"b (паритет {parity})",
-                value=st.session_state.get(f"b_{parity}", DEFAULT_WOOD_PARAMS[parity].b),
                 min_value=0.01,
                 max_value=1.0,
                 step=0.01,
@@ -75,7 +75,6 @@ with st.sidebar:
             )
             c = st.number_input(
                 f"c (паритет {parity})",
-                value=st.session_state.get(f"c_{parity}", DEFAULT_WOOD_PARAMS[parity].c),
                 min_value=0.0001,
                 max_value=0.02,
                 step=0.0001,
