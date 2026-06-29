@@ -44,6 +44,15 @@ DEFAULT_WOOD_PARAMS: dict[int, WoodParameters] = {
     3: WoodParameters(a=23.5, b=0.18, c=0.0030),
 }
 
+# Параметры, калиброванные по данным КТ Зенченко МТК Ленинский (CASE-002).
+# Источник: PACK-cattle-science/cases/CASE-002-zencht-leninsky-dynamics.md
+# Группа 19 (соматика) исключена из калибровки, т.к. модель Wood описывает здоровых коров.
+ZENCHTC_LENINSKY_PARAMS: dict[int, WoodParameters] = {
+    1: WoodParameters(a=13.8890, b=0.18, c=0.0030),
+    2: WoodParameters(a=20.4855, b=0.18, c=0.0030),
+    3: WoodParameters(a=22.5551, b=0.18, c=0.0030),
+}
+
 
 def build_curve_from_target(
     peak_yield: float, dim_peak: float, yield_305_target: float | None = None

@@ -9,6 +9,7 @@ import streamlit as st
 from economics import format_rub, project_economics
 from models import (
     DEFAULT_WOOD_PARAMS,
+    ZENCHTC_LENINSKY_PARAMS,
     WoodParameters,
     apply_shift,
     herd_summary,
@@ -28,20 +29,45 @@ with st.sidebar:
     st.header("⚙️ Параметры модели Wood")
     st.markdown("`y(t) = a · t^b · exp(-c·t)`")
 
+    PRESETS = {
+        "Default": DEFAULT_WOOD_PARAMS,
+        "Зенченко Ленинский": ZENCHTC_LENINSKY_PARAMS,
+    }
+
+    selected_preset = st.selectbox(
+        "Preset параметров",
+        list(PRESETS.keys()) + ["Custom"],
+        help="Выбери калиброванный preset или настрой параметры вручную (Custom).",
+    )
+
+    def _apply_preset(name: str) -> None:
+        if name in PRESETS:
+            for parity, params in PRESETS[name].items():
+                st.session_state[f"a_{parity}"] = params.a
+                st.session_state[f"b_{parity}"] = params.b
+                st.session_state[f"c_{parity}"] = params.c
+
+    # Инициализируем состояние при первой загрузке
+    if "a_1" not in st.session_state:
+        _apply_preset("Default")
+
+    # При выборе готового preset обновляем значения в полях
+    if selected_preset != "Custom":
+        _apply_preset(selected_preset)
+
     params_by_parity: dict[int, WoodParameters] = {}
     for parity in [1, 2, 3]:
-        default = DEFAULT_WOOD_PARAMS[parity]
         with st.expander(f"Паритет {parity}", expanded=parity == 2):
             a = st.number_input(
                 f"a (паритет {parity})",
-                value=default.a,
+                value=st.session_state.get(f"a_{parity}", DEFAULT_WOOD_PARAMS[parity].a),
                 min_value=0.1,
                 step=0.5,
                 key=f"a_{parity}",
             )
             b = st.number_input(
                 f"b (паритет {parity})",
-                value=default.b,
+                value=st.session_state.get(f"b_{parity}", DEFAULT_WOOD_PARAMS[parity].b),
                 min_value=0.01,
                 max_value=1.0,
                 step=0.01,
@@ -49,7 +75,7 @@ with st.sidebar:
             )
             c = st.number_input(
                 f"c (паритет {parity})",
-                value=default.c,
+                value=st.session_state.get(f"c_{parity}", DEFAULT_WOOD_PARAMS[parity].c),
                 min_value=0.0001,
                 max_value=0.02,
                 step=0.0001,
