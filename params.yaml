@@ -8,7 +8,7 @@
 # === Протоколы ===
 
 # Day Open: проверка видео за предыдущий день
-video_check: false
+video_check: true
 
 # Day Close: расчёт мультипликатора IWE (требует WakaTime API key)
 multiplier_enabled: true
@@ -22,7 +22,7 @@ lesson_rotation: true
 # === Верификация ===
 
 # Автоматическая верификация кода через sub-agent Haiku
-auto_verify_code: false
+auto_verify_code: true
 
 # Верификация Quick Close через sub-agent Haiku
 verify_quick_close: true
@@ -30,8 +30,12 @@ verify_quick_close: true
 # === Уведомления ===
 
 # Telegram уведомления от ролей (strategist, extractor, synchronizer)
-# Требует настройки TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID в .exocortex.env
-telegram_notifications: false
+telegram_notifications: true
+
+# Путь к кастомному скрипту уведомлений (issue #17, Linux/Docker).
+# Если не задан — используется встроенный macOS osascript.
+# Скрипт получает: $1=title $2=message и должен вернуть exit 0.
+notify_sh_path: ""
 
 # === MCP / Capture ===
 
@@ -53,13 +57,14 @@ linear_sync_path: ""
 # Директория с пользовательскими расширениями протоколов
 extensions_dir: extensions
 
-# === GitHub ===
+# === Накопительный черновик недельного поста (S-19) ===
 
-# Логин GitHub (используется скриптами для разрешения репозиториев)
-github_user: StanisSerg
-
-# Репозиторий FMT-exocortex-template для critical/deadline issue alerts
-fmt_repo: TserenTserenov/FMT-exocortex-template
+# Путь к репозиторию knowledge-index (относительно WORKSPACE_DIR).
+# Используется week-draft-init.sh + week-draft-append.sh для накопления
+# материала к недельному посту.
+# Пустая строка → скрипты пропускаются (фича не активирована).
+# Пример: knowledge_repo: "DS-Knowledge-Index"
+knowledge_repo: ""
 
 # === Автор шаблона ===
 
