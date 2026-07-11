@@ -28,6 +28,7 @@ RAW_BASE="https://raw.githubusercontent.com/$REPO/$BRANCH"
 
 CHECK_ONLY=false
 AUTO_YES=false
+FAST_CHECK=false
 
 # Allow extra curl flags via env var (e.g. CURL_OPTS="--insecure" for Windows corporate firewall).
 # shellcheck disable=SC2086  # $CURL_BASE_OPTS intentionally unquoted (multi-token flag)
@@ -49,6 +50,7 @@ esac
 for arg in "$@"; do
     case "$arg" in
         --check|--dry-run)  CHECK_ONLY=true ;;
+        --fast)             FAST_CHECK=true ;;
         --yes)              AUTO_YES=true ;;
         --version)          echo "exocortex-update v$VERSION"; exit 0 ;;
         --help|-h)
@@ -56,6 +58,7 @@ for arg in "$@"; do
             echo ""
             echo "Options:"
             echo "  --check     Показать доступные обновления без применения"
+            echo "  --fast      С --check: сравнить только версию манифеста (без скачивания 300+ файлов, issue #230)"
             echo "  --yes       Применить обновления без подтверждения"
             echo "  --version   Версия скрипта"
             echo "  --help      Эта справка"
@@ -165,6 +168,22 @@ UPSTREAM_VERSION=$(grep '"version"' "$MANIFEST" | head -1 | sed 's/.*"version"[[
 echo "  Версия upstream: $UPSTREAM_VERSION"
 echo ""
 
+# === Fast check (issue #230): version-only comparison, skips the ~330-file download loop ===
+# Достаточно для светофора Day Open (шаг 5) — полный список изменений всё ещё
+# доступен через `--check` без `--fast`.
+if $CHECK_ONLY && $FAST_CHECK; then
+    LOCAL_MANIFEST="$SCRIPT_DIR/update-manifest.json"
+    LOCAL_VERSION=""
+    [ -f "$LOCAL_MANIFEST" ] && LOCAL_VERSION=$(grep '"version"' "$LOCAL_MANIFEST" | head -1 | sed 's/.*"version"[[:space:]]*:[[:space:]]*"//;s/".*//')
+    if [ -n "$LOCAL_VERSION" ] && [ "$LOCAL_VERSION" = "$UPSTREAM_VERSION" ]; then
+        echo "✓ Версия совпадает с upstream (v$UPSTREAM_VERSION). Обновлений нет."
+    else
+        echo "⚠ Версия отличается: локально v${LOCAL_VERSION:-неизвестно}, upstream v$UPSTREAM_VERSION."
+        echo "  Для полного списка изменений: bash update.sh --check (без --fast)."
+    fi
+    exit 0
+fi
+
 # === Repair-pass для critical runtime files (issue #226) ===
 # Закрывает два gap-а:
 #   (1) «UNCHANGED ⇒ файл отсутствует» — ручное удаление / сбой предыдущего update.
@@ -203,7 +222,7 @@ repair_pass() {
                     fi
                 fi
                 ;;
-            .claude/skills/*|.claude/hooks/*|.claude/rules/*|.claude/rules-lazy/*|.claude/lib/*|.claude/config/*|.claude/detectors/*|.claude/scripts/*|.claude/agents/*|.claude/styles/*|.claude/templates/*|.claude/settings.json)
+            .claude/skills/*|.claude/hooks/*|.claude/rules/*|.claude/rules-lazy/*|.claude/lib/*|.claude/config/*|.claude/detectors/*|.claude/scripts/*|.claude/agents/*|.claude/styles/*|.claude/templates/*)
                 dst="$WORKSPACE_DIR/$fpath"
                 if [ ! -f "$dst" ]; then
                     mkdir -p "$(dirname "$dst")"
@@ -215,6 +234,22 @@ repair_pass() {
                     cp "$SCRIPT_DIR/$fpath" "$dst"
                     case "$fpath" in *.sh) chmod +x "$dst" ;; esac
                     echo "  ⟲ $fpath → workspace (stale repair)"
+                    REPAIRED=$((REPAIRED + 1))
+                fi
+                ;;
+            .claude/settings.json)
+                # bug-2026-07-11: settings.json mixes L1 platform defaults with L4 user
+                # hooks/permissions (custom security hooks, additionalDirectories, allow-list).
+                # Treating it like a pure-L1 path (skills/hooks/rules/...) made every "hash
+                # differs from template" stale-repair silently clobber the user's own hooks
+                # back to the generic template — a live regression found and fixed live in
+                # this file (see inbox/bugs/bug-2026-07-11-update-sh-settings-json-clobber.md).
+                # Only seed on first install; never overwrite an existing file here.
+                dst="$WORKSPACE_DIR/$fpath"
+                if [ ! -f "$dst" ]; then
+                    mkdir -p "$(dirname "$dst")"
+                    cp "$SCRIPT_DIR/$fpath" "$dst"
+                    echo "  ⟲ $fpath → workspace (repair, new install)"
                     REPAIRED=$((REPAIRED + 1))
                 fi
                 ;;
@@ -882,12 +917,24 @@ for f in "${NEW_FILES[@]}" "${UPDATED_FILES[@]}"; do
                 echo "  ✓ $f → workspace"
             fi
             ;;
-        .claude/skills/*|.claude/hooks/*|.claude/rules/*|.claude/rules-lazy/*|.claude/lib/*|.claude/config/*|.claude/detectors/*|.claude/scripts/*|.claude/agents/*|.claude/styles/*|.claude/templates/*|.claude/settings.json)
+        .claude/skills/*|.claude/hooks/*|.claude/rules/*|.claude/rules-lazy/*|.claude/lib/*|.claude/config/*|.claude/detectors/*|.claude/scripts/*|.claude/agents/*|.claude/styles/*|.claude/templates/*)
             src="$SCRIPT_DIR/$f"
             dst="$WORKSPACE_DIR/$f"
             mkdir -p "$(dirname "$dst")"
             cp "$src" "$dst"
             echo "  ✓ $f → workspace"
+            ;;
+        .claude/settings.json)
+            # See repair_pass() comment above (bug-2026-07-11) — never blind-overwrite,
+            # workspace copy carries user hooks/permissions the template doesn't have.
+            dst="$WORKSPACE_DIR/$f"
+            if [ ! -f "$dst" ]; then
+                mkdir -p "$(dirname "$dst")"
+                cp "$SCRIPT_DIR/$f" "$dst"
+                echo "  ✓ $f → workspace (new install)"
+            else
+                echo "  ⚠ $f — платформа обновила hooks/permissions, workspace-копия НЕ тронута (несёт пользовательские хуки). Сверь вручную: diff \"$SCRIPT_DIR/$f\" \"$dst\""
+            fi
             ;;
     esac
 done

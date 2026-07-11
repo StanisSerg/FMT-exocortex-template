@@ -74,10 +74,29 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 
 
-## [Unreleased] — обновлено 2026-07-07
+
+
+
+
+
+
+
+
+
+
+## [Unreleased] — обновлено 2026-07-11
+
+Спасибо VxxxlBxxxxv, AVNechaev, alexmetasky, den317 и maxborovik за репорты этой волны (#230, #232-233, #235-246). issue #234 (Day Close token-discipline model, за него отдельное спасибо maxborovik) — принят к рассмотрению, реализация отложена в РП7 отдельной фазой.
 
 ### Added
 
+- `e919c04` feat(update.sh): add --fast check mode, version-only comparison (#230)
+- `fed2e79` feat(wp401): governance-файлы публичной витрины (CODE_OF_CONDUCT/SECURITY/PRIVACY/CODEOWNERS/CITATION.cff) + доставка в iwesys
+- `2381d7f` feat(wp-7): promote 6 day-open scripts + fix scaffold drift + seed new-user scripts
+- `927808b` feat(wp-7): promote 6 day-open scripts + fix scaffold drift + seed new-user scripts
+- `1c71664` feat: promote day-open-pipeline.sh entry point (WP-7 FMT-PROMOTE-DAYOPEN1)
+- `c428393` feat(canon-sync): add iwesys/MimEcoSys publish jobs to translate-sync workflow
+- `a100fa6` feat: promote iwe-bug-report.sh to platform (WP-5 sub-#3)
 - `529e165` feat(wp-448-ф7): промоция TPF-рамки — 7 артефактов процессного слоя IWE
 - `77e856c` feat(wp-415): sync glossary from iwe-translation-engine (18/78/30 tiers)
 - `acf10e4` feat(wp-415): automate RU→EN translation sync with tier-based delivery tests
@@ -86,6 +105,12 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
+- `65e5534` rename(canon-sync): target repo iwesys/iwe-template -> iwesys/IWE
+- `e4a23f0` fix(wp415): jq null-guard for per-commit added/modified/removed in translate-sync
+- `039ccf8` chore(hygiene): untrack .DS_Store, добавить в .gitignore
+- `bdb2c9b` docs(changelog): thank users for #229/#228 reports, sync Unreleased section
+- `5b72787` rename(canon-sync): target repo iwesys/FMT-exocortex-template-en -> iwesys/iwe-template
+- `5bce5e3` revert(canon-sync): drop MimEcoSys mirror job — wrong repo scope
 - `b3ba993` refactor(translate): drop openai SDK dependency, call OpenRouter directly
 - `901103d` docs: python3 in maintaining-skills snippets
 - `c25790a` refactor(translate): switch provider to OpenRouter (reuse existing key, mirror enrich-glossary client)
@@ -93,6 +118,22 @@ Versioning: [Semantic Versioning](https://semver.org/).
 
 ### Fixed
 
+- `f37d93a` fix(exocortex): back up and restore extensions/, matching DATA-POLICY.md promise (#235)
+- `b3b6a37` fix(week): remove phantom auto-publisher claim, fix day_num GNU-date fallback (#245)
+- `a3d0b95` fix(day-open-scaffold): bound gh issue list calls with portable timeout (#241)
+- `e0f5031` fix(strategy-session): wire load-extensions before/after hooks (#236)
+- `cddc7aa` fix(seed): align WP-REGISTRY.md schema with create-wp.sh's 6-column output (#232)
+- `3647e57` fix(memory-active-wp-update): fall back to nested FMT-exocortex-template/ layout (#242)
+- `2b7109c` fix(dt-collect): read scheduler/reports, not scheduler/scheduler-reports (#243)
+- `fa23ff0` fix(hooks): scope destructive-guard force detection to git push segment (#233)
+- `d234799` fix(manifest): restore executable bit for shell scripts (#239)
+- `b4a3fa9` fix(perms): restore executable bit on .claude/lib/frontmatter.sh
+- `0f15820` fix(strategy): avoid false calendar and issue defaults in day plan (#238)
+- `6a7a7b0` fix(hooks): harden dry-run gate git and cleanup handling (#237)
+- `41c20fe` fix(translate-sync): attribute EN commits to the human source author, not a bot
+- `726fa80` fix(ci): restore scripts/iwe-bug-report.sh dropped from manifest by 7ae267a
+- `7ae267a` fix(#229,#228): protect owner:user memory files from stale-repair, add hot-budget validator
+- `c828396` fix(canon-sync): persist-credentials false on en-draft checkout
 - `eb2e1fe` fix(WP-7/SP1): R15 (accept/reject/defer) — только живой пилот, не агент
 - `8562439` fix(translate): strip <body> markers unconditionally, detect output truncation
 - `791df86` fix(translate-sync): stop rsync --delete mirror from wiping en-draft
@@ -112,8 +153,6 @@ Versioning: [Semantic Versioning](https://semver.org/).
 - `0b5e140` fix(extractor): guard против запуска сырого файла шаблона + правка примеров
 - `b4d08a2` fix(v0.35.5): orphan-detection TypeError + DS-strategy validator + root detection (#214 #215)
 - `212fa2f` fix(setup): include rules-lazy in dry-run and section message
-- `b7d75a8` fix(template): verify-template-integrity mirrors CI contract+smoke jobs
-- `0200a93` fix(template): close manifest drift + setup/update rules-lazy gap, wire parity gate
 
 
 ## [0.35.5] — 2026-06-30
