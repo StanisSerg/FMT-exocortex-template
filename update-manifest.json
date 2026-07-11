@@ -273,6 +273,12 @@
       "path": ".claude/skills/pack-new/SKILL.md"
     },
     {
+      "path": ".claude/skills/parse-inbox-notes/SKILL.md"
+    },
+    {
+      "path": ".claude/skills/parse-inbox-notes/scripts/parse-inbox-notes.sh"
+    },
+    {
       "path": ".claude/skills/peer-conversation/SKILL.md"
     },
     {
