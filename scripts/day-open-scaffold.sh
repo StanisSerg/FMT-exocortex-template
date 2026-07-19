@@ -43,6 +43,43 @@ DATE="${1:-$(date +%Y-%m-%d)}"
 CONFIG="$IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/exocortex/day-rhythm-config.yaml"
 SERVER_MODE="${IWE_SERVER_MODE:-0}"  # WP-283: 1 = Linux server, Mac-only MCP недоступен
 
+# Bounded network call (2026-07-17: scaffold вис 3+ мин без вывода — gh/fetch/update.sh
+# без таймаута, а весь stdout собирается в heredoc и печатается только в конце).
+# timeout есть на Linux (coreutils), на macOS — только с coreutils (gtimeout);
+# без обоих — запускаем как есть.
+NET_TIMEOUT="${IWE_NET_TIMEOUT:-15}"
+net_run() {
+  if command -v timeout >/dev/null 2>&1; then
+    timeout "$NET_TIMEOUT" "$@"
+  elif command -v gtimeout >/dev/null 2>&1; then
+    gtimeout "$NET_TIMEOUT" "$@"
+  else
+    "$@"
+  fi
+}
+
+# Где зарегистрирован scheduler/feedback-watchdog: launchd (macOS) /
+# systemd-user / crontab (Linux) / none. Раньше проверялся только launchctl —
+# на Linux детекция молча не работала (инцидент 2026-07-17).
+sched_unit_kind() {
+  if [ "$(uname -s)" = "Darwin" ]; then
+    launchctl list 2>/dev/null | grep -qE "iwe\.(scheduler|feedback-watchdog|synchronizer|feedback-triage)" \
+      && { echo "launchd"; return; }
+  else
+    systemctl --user list-units --no-pager 2>/dev/null | grep -qE "iwe[.-](scheduler|feedback-watchdog|synchronizer|feedback-triage)" \
+      && { echo "systemd-user"; return; }
+    crontab -l 2>/dev/null | grep -qE "scheduler\.sh|feedback-watchdog|feedback-triage" \
+      && { echo "crontab"; return; }
+  fi
+  echo "none"
+}
+
+# Работает и для субмодулей (у них .git — файл, а не каталог; `[ -d .git ]`
+# молча их пропускал — Day Open 2026-07-17: пустые секции активности/base-репо).
+is_git_repo() {
+  git -C "$1" rev-parse --git-dir >/dev/null 2>&1
+}
+
 # --- Pre-flight healthcheck (WP-7 ФDay-Open-Hardening) ---
 PREFLIGHT_JSON=$(bash "$IWE/scripts/day-open-preflight.sh" "$DATE" "$CONFIG" 2>/dev/null || echo '{"calendar":"unknown","scout":"unknown","triage":"unknown"}')
 CALENDAR_PF=$(echo "$PREFLIGHT_JSON" | jq -r '.calendar // "unknown"')
@@ -380,18 +417,18 @@ render_repo_issues() {
   [ -z "$since" ] && { echo "_не удалось вычислить дату фильтра — пропуск._"; return; }
   local out="" any=0 repo slug rows stale_count stale_url
   for repo in "$IWE"/*/; do
-    [ -d "${repo}.git" ] || continue
+    is_git_repo "$repo" || continue
     git -C "$repo" remote get-url origin 2>/dev/null | grep -qi github || continue
     slug=$(basename "$repo")
     # New issues (last 2 days)
-    rows=$( (cd "$repo" && gh issue list --state open --search "created:>=$since" \
+    rows=$( (cd "$repo" && net_run gh issue list --state open --search "created:>=$since" \
              --json number,title --jq '.[] | "| #\(.number) | \(.title) |"' 2>/dev/null) )
     if [ -n "$rows" ]; then
       out="${out}\n**${slug} (новые):**\n\n| # | Заголовок |\n|---|---|\n${rows}\n"
       any=1
     fi
     # Stale issues: open + labeled stale-unattended (pipeline gap fix, issue #pipeline)
-    stale_count=$( (cd "$repo" && gh issue list --state open --label "stale-unattended" \
+    stale_count=$( (cd "$repo" && net_run gh issue list --state open --label "stale-unattended" \
                    --json number --jq 'length' 2>/dev/null) || echo "0" )
     if [ "${stale_count:-0}" -gt 0 ] 2>/dev/null; then
       local remote_url
@@ -418,7 +455,7 @@ render_repo_activity() {
   [ -z "$since" ] && { echo "_не удалось вычислить дату фильтра — пропуск._"; return; }
   out="| Репозиторий | Коммитов (2д) | Последний |\n|---|---|---|\n"
   for repo in "$IWE"/*/; do
-    [ -d "${repo}.git" ] || continue
+    is_git_repo "$repo" || continue
     slug=$(basename "$repo")
     n=$(git -C "$repo" log --since="$since 00:00:00" --oneline 2>/dev/null | wc -l | tr -d ' ')
     [ "${n:-0}" -eq 0 ] && continue
@@ -459,7 +496,7 @@ render_iwe_status() {
   fi
 
   # template-sync (FMT last commit)
-  if [ -d "$IWE/FMT-exocortex-template/.git" ]; then
+  if is_git_repo "$IWE/FMT-exocortex-template"; then
     local fmt_last
     fmt_last=$(git -C "$IWE/FMT-exocortex-template" log -1 --format="%cr" 2>/dev/null || echo "?")
     echo "| template-sync | 🟢 | FMT last commit: $fmt_last |"
@@ -504,10 +541,10 @@ render_iwe_status() {
   last_watchdog_log=$(ls -t "$HOME/logs/synchronizer/feedback-watchdog-"*.log 2>/dev/null | head -1 || echo "")
   local last_feedback_triage_log
   last_feedback_triage_log=$(ls -t "$IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/logs/feedback-triage"*.log 2>/dev/null | head -1 || echo "")
-  local has_launchd_unit=false
-  if launchctl list 2>/dev/null | grep -qE "iwe\.(scheduler|feedback-watchdog|synchronizer|feedback-triage)"; then
-    has_launchd_unit=true
-  fi
+  local sched_kind
+  sched_kind=$(sched_unit_kind)
+  local has_sched_unit=false
+  [ "$sched_kind" != "none" ] && has_sched_unit=true
 
   # Grace window: feedback-triage запускается в 06:00, до 06:30 отсутствие отчёта — норма
   local current_hour current_min in_grace_window=false
@@ -520,10 +557,10 @@ render_iwe_status() {
   if [ -f "$triage_file" ] || [ -f "$watchdog_log" ] || [ -f "$feedback_triage_log" ]; then
     # Mode B-1: отчёт/лог за сегодня есть → норм
     echo "| Scheduler/триаж | 🟢 | отчёт/лог за $DATE присутствует (Mode B норм) |"
-  elif [ "$has_launchd_unit" = "true" ] && [ "$in_grace_window" = "true" ]; then
+  elif [ "$has_sched_unit" = "true" ] && [ "$in_grace_window" = "true" ]; then
     # Mode C: юнит загружен, но cron ещё не сработал (до 06:30)
-    echo "| Scheduler/триаж | 🟡 | Mode C: юнит загружен, ожидание cron (06:00) — grace window до 06:30 |"
-  elif [ "$has_launchd_unit" = "true" ] && { [ -n "$last_watchdog_log" ] || [ -n "$last_feedback_triage_log" ]; }; then
+    echo "| Scheduler/триаж | 🟡 | Mode C: юнит загружен ($sched_kind), ожидание cron (06:00) — grace window до 06:30 |"
+  elif [ "$has_sched_unit" = "true" ] && { [ -n "$last_watchdog_log" ] || [ -n "$last_feedback_triage_log" ]; }; then
     # Mode B-2: юнит зарегистрирован, есть свежий лог < 2 дней → норм (тишина = нет жалоб)
     local last_log_age_days=-1
     local last_log_file=""
@@ -536,24 +573,45 @@ render_iwe_status() {
       last_log_age_days=$(( ( $(date +%s) - $(stat -f %m "$last_log_file" 2>/dev/null || stat -c %Y "$last_log_file" 2>/dev/null || echo 0) ) / 86400 ))
     fi
     if [ "$last_log_age_days" -le 1 ] || [ "$last_log_age_days" -eq -1 ]; then
-      echo "| Scheduler/триаж | 🟢 | Mode B: feedback-triage зарегистрирован, последний лог присутствует (нет жалоб = тишина) |"
+      echo "| Scheduler/триаж | 🟢 | Mode B: feedback-triage зарегистрирован ($sched_kind), последний лог присутствует (нет жалоб = тишина) |"
     else
-      echo "| Scheduler/триаж | 🟡 | Mode B: feedback-triage зарегистрирован, но лог не обновлялся ${last_log_age_days}д — возможно cron skipped |"
+      echo "| Scheduler/триаж | 🟡 | Mode B: feedback-triage зарегистрирован ($sched_kind), но лог не обновлялся ${last_log_age_days}д — возможно cron skipped |"
     fi
   else
-    # Mode A: cron не запущен (нет юнита в launchctl) + нет свежих логов
+    # Mode A: cron не запущен (юнит не найден нигде) + нет свежих логов
     local last_log_age_days="∞"
     if [ -n "$last_feedback_triage_log" ]; then
       last_log_age_days=$(( ( $(date +%s) - $(stat -f %m "$last_feedback_triage_log" 2>/dev/null || stat -c %Y "$last_feedback_triage_log" 2>/dev/null || echo 0) ) / 86400 ))
     elif [ -n "$last_watchdog_log" ]; then
       last_log_age_days=$(( ( $(date +%s) - $(stat -f %m "$last_watchdog_log" 2>/dev/null || stat -c %Y "$last_watchdog_log" 2>/dev/null || echo 0) ) / 86400 ))
     fi
-    echo "| Scheduler/триаж | 🔴 | **Mode A** (cron не отработал): юнит feedback-triage не зарегистрирован в launchctl, последний лог ${last_log_age_days}д назад |"
+    if [ "$(uname -s)" = "Darwin" ]; then
+      echo "| Scheduler/триаж | 🔴 | **Mode A** (cron не отработал): юнит feedback-triage не зарегистрирован в launchctl, последний лог ${last_log_age_days}д назад |"
+    else
+      echo "| Scheduler/триаж | 🔴 | **Mode A** (cron не отработал): юнит feedback-triage не найден (systemd --user / crontab пусты), последний лог ${last_log_age_days}д назад |"
+    fi
 
     # Auto-create incident-файл если ещё нет за сегодня
     local incident_file="$IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/inbox/INCIDENT-scheduler-cron-not-fired-$DATE.md"
     if [ ! -f "$incident_file" ]; then
       mkdir -p "$IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/inbox"
+      # OS-aware контент (2026-07-17: раньше action items были только про launchd,
+      # а install-launchd.sh на Linux-хосте отсутствует — пункты вели в никуда)
+      local sched_script="${IWE_SCHEDULER_PATH:-$IWE/scripts/scheduler.sh}"
+      local sched_script_state=""
+      [ -f "$sched_script" ] || sched_script_state=" (⚠ файл не найден — сначала восстановить, см. DS-agent-workspace/scheduler/)"
+      local inc_symptom inc_actions
+      if [ "$(uname -s)" = "Darwin" ]; then
+        inc_symptom="- launchctl: юнит \`iwe.scheduler\` или \`iwe.feedback-watchdog\` отсутствует"
+        inc_actions="1. Проверить \`~/Library/LaunchAgents/\` на наличие plist
+2. \`bash $IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/scripts/install-launchd.sh\` для регистрации
+3. Запустить руками: \`bash $sched_script --dry-run\`$sched_script_state"
+      else
+        inc_symptom="- systemd --user / crontab: юнит \`iwe.scheduler\`/\`iwe.feedback-watchdog\` не зарегистрирован (\`systemctl --user list-units\` и \`crontab -l\` пусты)"
+        inc_actions="1. Проверить \`crontab -l\` и \`systemctl --user list-units 'iwe*'\` — регистрации нет
+2. Зарегистрировать cron-запись: \`(crontab -l; echo '0 6 * * * bash $sched_script') | crontab -\` (или systemd user timer)
+3. Запустить руками: \`bash $sched_script --dry-run\`$sched_script_state"
+      fi
       cat > "$incident_file" <<INCEOF
 ---
 type: incident
@@ -572,15 +630,13 @@ auto_generated: true
 
 ## Симптом (auto-detected)
 
-- launchctl: юнит \`iwe.scheduler\` или \`iwe.feedback-watchdog\` отсутствует
+$inc_symptom
 - Последний лог \`~/logs/synchronizer/feedback-watchdog-*.log\` старше 24ч (или отсутствует)
 - Mode A классификация (см. peer-сессия 2026-05-30-07 §Gap 3)
 
 ## Action items
 
-1. Проверить \`~/Library/LaunchAgents/\` на наличие plist
-2. \`bash $IWE/${IWE_GOVERNANCE_REPO:-DS-strategy}/scripts/install-launchd.sh\` для регистрации
-3. Запустить руками: \`bash \${IWE_SCHEDULER_PATH:-$IWE/scripts/scheduler.sh} --dry-run\`
+$inc_actions
 
 ## Auto-generation note
 
@@ -609,18 +665,19 @@ INCEOF
     echo "| active-wp | ⚪ | статус не определён |"
   fi
 
-  # update.sh check (FMT)
+  # update.sh check (FMT) — --fast: только версия манифеста (issue #230),
+  # полный --check гоняет 300+ файлов 2+ минуты и вешал Day Open (2026-07-17)
   if [ -d "$IWE/FMT-exocortex-template" ]; then
     local upd_status
-    upd_status=$(cd "$IWE/FMT-exocortex-template" && bash update.sh --check 2>&1 | grep -oE '[0-9]+ обновлен|нет обновлен|актуал' | head -1)
+    upd_status=$(cd "$IWE/FMT-exocortex-template" && net_run bash update.sh --check --fast 2>&1 | grep -oE 'Обновлений нет|Версия отличается[^.]*|[0-9]+ обновлен|нет обновлен|актуал' | head -1)
     echo "| Update IWE | 🟢 | ${upd_status:-проверено} |"
   fi
 
   # Base repos (FPF/SPF/ZP) — fetch + behind count
   for repo in FPF SPF ZP; do
     local d="$IWE/$repo"
-    if [ -d "$d/.git" ]; then
-      git -C "$d" fetch --quiet 2>/dev/null
+    if is_git_repo "$d"; then
+      net_run git -C "$d" fetch --quiet 2>/dev/null
       local behind
       behind=$(git -C "$d" rev-list --count HEAD..origin/main 2>/dev/null || echo 0)
       if [ "$behind" -gt 0 ]; then
@@ -724,7 +781,7 @@ render_content_cleanup() {
 render_yesterday() {
   local total=0 repos=0
   for repo in "$IWE"/*/; do
-    [ -d "$repo/.git" ] || continue
+    is_git_repo "$repo" || continue
     local n
     n=$(git -C "$repo" log --since="$YDAY 00:00" --until="$YDAY 23:59" --oneline 2>/dev/null | wc -l | tr -d ' ')
     if [ "$n" -gt 0 ]; then
@@ -789,9 +846,9 @@ render_compact_dashboard() {
 
   # Светофор — критические позиции
   echo "**IWE за ночь:**"
-  echo "  Scheduler: $(launchctl list 2>/dev/null | grep -qE 'iwe\.(scheduler|feedback)' && echo '🟢' || echo '🔴 не запущен')"
+  echo "  Scheduler: $([ "$(sched_unit_kind)" != "none" ] && echo '🟢' || echo '🔴 не запущен')"
   local fpf_status
-  if [ -d "$IWE/FPF/.git" ] && git -C "$IWE/FPF" fetch --quiet 2>/dev/null; then
+  if is_git_repo "$IWE/FPF" && net_run git -C "$IWE/FPF" fetch --quiet 2>/dev/null; then
     local behind; behind=$(git -C "$IWE/FPF" rev-list --count HEAD..origin/main 2>/dev/null || echo "?")
     fpf_status=$( [ "$behind" = "0" ] && echo "🟢" || echo "🟡 новых: $behind" )
   else
