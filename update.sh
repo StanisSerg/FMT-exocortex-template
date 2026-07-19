@@ -92,8 +92,39 @@ is_personal_config() {
     esac
 }
 
+# is_author_mode — true когда WORKSPACE_DIR/params.yaml объявляет author_mode: true.
+# Автор правит L1 напрямую до промоции в шаблон — расхождение хэша тут не staleness.
+# См. inbox/bugs/bug-2026-07-11-update-sh-author-mode-blind-clobber.md.
+is_author_mode() {
+    local params_file="$WORKSPACE_DIR/params.yaml"
+    [ -f "$params_file" ] || return 1
+    grep -qE '^author_mode:[[:space:]]*true' "$params_file"
+}
+
+# author_diverged FPATH — author_mode: SCRIPT_DIR — git-клон этого самого шаблона,
+# из которого качается upstream. Git — точный арбитр «locally stale vs автор доработал»,
+# не список защищённых путей (issue #238, тот же класс бага, что стёр 66 файлов —
+# guard 86cf080 защитил только .claude/*, а манифест несёт roles/docs/pack-templates/
+# и другие каталоги вне списка). Диверженс = (1) файл dirty/untracked, ИЛИ (2) закоммичен
+# локально, но не в origin/$BRANCH (ещё не запромотирован). Fail-closed: не git-репо
+# или fetch не удался → защищаем (считаем diverged), чтобы не потерять данные молча.
+_AUTHOR_FETCH_DONE=false
+author_diverged() {
+    local fpath="$1"
+    is_author_mode || return 1
+    git -C "$SCRIPT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 || return 0
+    if [ "$_AUTHOR_FETCH_DONE" = false ]; then
+        git -C "$SCRIPT_DIR" fetch --quiet origin "$BRANCH" 2>/dev/null || true
+        _AUTHOR_FETCH_DONE=true
+    fi
+    [ -n "$(git -C "$SCRIPT_DIR" status --porcelain --untracked-files=all -- "$fpath" 2>/dev/null)" ] && return 0
+    [ -n "$(git -C "$SCRIPT_DIR" log --oneline "origin/$BRANCH..HEAD" -- "$fpath" 2>/dev/null)" ] && return 0
+    return 1
+}
+
 # === Detect directories ===
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+export SCRIPT_DIR
 
 # issue #229: shared frontmatter reader (get_field), sourced by SCRIPT_DIR-relative
 # path. Soft here (no || exit 1): an install upgrading from a pre-2.4.0 version
@@ -215,6 +246,11 @@ repair_pass() {
                         : # issue #229: owner: user в frontmatter — пилот владеет файлом, stale-repair не применяется никогда
                     elif is_personal_config "$fname"; then
                         : # личный L4-конфиг без frontmatter (day-rhythm-config.yaml) — НЕ stale-repair
+                    elif is_author_mode; then
+                        # issue #238: та же дыра, что уже закрыта для .claude/*-веток ниже —
+                        # автор мог доработать live-копию memory-файла напрямую, stale-repair
+                        # молча затирал бы её версией из SCRIPT_DIR.
+                        echo "  ⚠ $fpath — author_mode: memory/ рабочая копия не тронута. Сверь: diff \"$SCRIPT_DIR/$fpath\" \"$mem_dst\""
                     elif [ -r "$mem_dst" ] && [ "$(hash_file "$SCRIPT_DIR/$fpath")" != "$(hash_file "$mem_dst")" ]; then
                         cp "$SCRIPT_DIR/$fpath" "$mem_dst"
                         echo "  ⟲ $fpath → memory/ (stale repair)"
@@ -230,6 +266,8 @@ repair_pass() {
                     case "$fpath" in *.sh) chmod +x "$dst" ;; esac
                     echo "  ⟲ $fpath → workspace (repair)"
                     REPAIRED=$((REPAIRED + 1))
+                elif [ -r "$dst" ] && is_author_mode && [ "$(hash_file "$SCRIPT_DIR/$fpath")" != "$(hash_file "$dst")" ]; then
+                    echo "  ⚠ $fpath — author_mode: рабочая копия не тронута. Сверь: diff \"$SCRIPT_DIR/$fpath\" \"$dst\""
                 elif [ -r "$dst" ] && [ "$(hash_file "$SCRIPT_DIR/$fpath")" != "$(hash_file "$dst")" ]; then
                     cp "$SCRIPT_DIR/$fpath" "$dst"
                     case "$fpath" in *.sh) chmod +x "$dst" ;; esac
@@ -328,6 +366,18 @@ while IFS='|' read -r fpath fdesc; do
         # Existing file — compare hashes
         LOCAL_HASH=$(hash_file "$SCRIPT_DIR/$fpath")
         REMOTE_HASH=$(hash_file "$REMOTE_FILE")
+        # issue #254: merge-managed файл (3-way merge, напр. CLAUDE.md) законно
+        # расходится с upstream локальными кастомизациями → local≠remote всегда.
+        # Для таких файлов детектор сравнивает base↔remote: upstream не двигался
+        # с последнего merge — «без изменений». Детект по наличию .base-файла.
+        MERGE_BASE="$(dirname "$fpath")/.$(basename "$fpath" | tr '[:upper:]' '[:lower:]').base"
+        if [ -f "$SCRIPT_DIR/$MERGE_BASE" ]; then
+            BASE_HASH=$(hash_file "$SCRIPT_DIR/$MERGE_BASE")
+            if [ "$BASE_HASH" = "$REMOTE_HASH" ]; then
+                UNCHANGED=$((UNCHANGED + 1))
+                continue
+            fi
+        fi
         if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
             DIFF_COUNT=$(diff "$SCRIPT_DIR/$fpath" "$REMOTE_FILE" 2>/dev/null | grep -c '^[<>]' || true); DIFF_COUNT=${DIFF_COUNT:-?}
             UPDATED_FILES+=("$fpath")
@@ -386,7 +436,13 @@ if [ "$TOTAL_CHANGES" -eq 0 ]; then
     # issue #226: TOTAL_CHANGES=0 значит SCRIPT_DIR уже совпадает с upstream — но
     # workspace мог остаться stale (прерванный предыдущий запуск). Чиним прямо тут,
     # иначе repair-pass ниже никогда не выполнится (недостижим после этого exit).
-    repair_pass
+    # bug-2026-07-11-update-sh-author-mode-blind-clobber: repair_pass() пишет файлы
+    # на диск — под --check (без --fast) это ложное «превью без изменений».
+    if $CHECK_ONLY; then
+        echo "  ℹ Режим --check: repair-pass пропущен (может чинить workspace, запусти без --check)."
+    else
+        repair_pass
+    fi
     echo "✓ Всё актуально. Обновлений нет. ($UNCHANGED файлов проверено)"
     exit 0
 fi
@@ -471,10 +527,18 @@ echo "Применяю обновления..."
 
 APPLIED=0
 REMOVED=0
+AUTHOR_SKIPPED=0
+APPLIED_PATHS=()
 
 for f in "${NEW_FILES[@]}"; do
+    if author_diverged "$f"; then
+        echo "  ⚠ $f — author_mode: локально изменён/удалён, не восстанавливаю. Сверь: git -C \"$SCRIPT_DIR\" status -- \"$f\""
+        AUTHOR_SKIPPED=$((AUTHOR_SKIPPED + 1))
+        continue
+    fi
     mkdir -p "$SCRIPT_DIR/$(dirname "$f")"
     cp "$TMPDIR_UPDATE/files/$f" "$SCRIPT_DIR/$f"
+    APPLIED_PATHS+=("$f")
     # Make scripts executable
     case "$f" in *.sh) chmod +x "$SCRIPT_DIR/$f" ;; esac
     echo "  + $f"
@@ -482,6 +546,17 @@ for f in "${NEW_FILES[@]}"; do
 done
 
 for f in "${UPDATED_FILES[@]}"; do
+    # issue #238: author_mode-guard ДО всех спецкейсов ниже (CLAUDE.md 3-way merge,
+    # SKILL.md USER-SPACE preserve, generic cp) — иначе несмёрженная авторская правка
+    # в любом из них та же участь, что уже стёрла 66 файлов (86cf080 закрыл только
+    # .claude/*-ветку в repair_pass()/Step 6, не эту, более раннюю точку входа).
+    if author_diverged "$f"; then
+        echo "  ⚠ $f — author_mode: несмёрженные правки, файл не тронут."
+        echo "    Сверь: diff \"$TMPDIR_UPDATE/files/$f\" \"$SCRIPT_DIR/$f\""
+        AUTHOR_SKIPPED=$((AUTHOR_SKIPPED + 1))
+        continue
+    fi
+    APPLIED_PATHS+=("$f")
     # Special handling for CLAUDE.md: 3-way merge preserving user customizations
     if [ "$f" = "CLAUDE.md" ] && [ -f "$SCRIPT_DIR/$f" ]; then
         BASE_FILE="$SCRIPT_DIR/.claude.md.base"
@@ -862,6 +937,10 @@ if [ -d "$CLAUDE_MEMORY_DIR" ]; then
                         echo "  ✓ $fname — owner: user, не перезаписан"
                     elif is_personal_config "$fname" && [ -f "$dst" ]; then
                         echo "  ✓ $fname — личный L4-конфиг, не перезаписан"
+                    elif is_author_mode && [ -f "$dst" ]; then
+                        # issue #238: тот же класс, что уже закрыт для .claude/*-веток —
+                        # эта ветка тоже слепо копировала SCRIPT_DIR поверх live-копии.
+                        echo "  ⚠ $fname — author_mode: memory/ рабочая копия не тронута. Сверь: diff \"$SCRIPT_DIR/$f\" \"$dst\""
                     else
                         cp "$SCRIPT_DIR/$f" "$dst"
                         MEM_UPDATED=$((MEM_UPDATED + 1))
@@ -883,6 +962,10 @@ for f in "${NEW_FILES[@]}" "${UPDATED_FILES[@]}"; do
         .claude/skills/*/SKILL.md)
             src="$SCRIPT_DIR/$f"
             dst="$WORKSPACE_DIR/$f"
+            if is_author_mode && [ -f "$dst" ]; then
+                echo "  ⚠ $f — author_mode: рабочая копия не тронута. Сверь: diff \"$src\" \"$dst\""
+                continue
+            fi
             mkdir -p "$(dirname "$dst")"
             # 1. Extract USER_SECTION from workspace before overwriting
             if [ -f "$dst" ]; then
@@ -920,6 +1003,10 @@ for f in "${NEW_FILES[@]}" "${UPDATED_FILES[@]}"; do
         .claude/skills/*|.claude/hooks/*|.claude/rules/*|.claude/rules-lazy/*|.claude/lib/*|.claude/config/*|.claude/detectors/*|.claude/scripts/*|.claude/agents/*|.claude/styles/*|.claude/templates/*)
             src="$SCRIPT_DIR/$f"
             dst="$WORKSPACE_DIR/$f"
+            if is_author_mode && [ -f "$dst" ]; then
+                echo "  ⚠ $f — author_mode: рабочая копия не тронута. Сверь: diff \"$src\" \"$dst\""
+                continue
+            fi
             mkdir -p "$(dirname "$dst")"
             cp "$src" "$dst"
             echo "  ✓ $f → workspace"
@@ -1133,6 +1220,8 @@ fi
 # === Step 6e: Replace local manifest with downloaded remote manifest ===
 # Replaces entire manifest (files + deprecated_files + version), not just version field.
 # This ensures validators (D1/D9/D10) and future updates see the correct file list.
+# Fork-local exclusions live in update-manifest.local.json (issue #247) —
+# never written by this script, merged by check-manifest-coverage.py and 6f below.
 if [ -f "$MANIFEST" ]; then
     cp "$MANIFEST" "$SCRIPT_DIR/update-manifest.json" \
         && echo "  • update-manifest.json: заменён remote manifest (v$UPSTREAM_VERSION)"
@@ -1147,7 +1236,7 @@ if command -v python3 &>/dev/null && [ -f "$SCRIPT_DIR/update-manifest.json" ]; 
     ORPHAN_OUTPUT=$(python3 - <<'PYEOF'
 import json, os
 
-script_dir = os.path.dirname(os.path.abspath(__file__))
+script_dir = os.environ.get("SCRIPT_DIR", os.path.dirname(os.path.abspath(__file__)))
 manifest_path = os.path.join(script_dir, "update-manifest.json")
 
 with open(manifest_path) as f:
@@ -1157,6 +1246,21 @@ def _path(e): return e["path"] if isinstance(e, dict) else e
 known = {_path(e) for e in manifest.get("files", [])}
 deprecated = {_path(e) for e in manifest.get("deprecated_files", [])}
 all_known = known | deprecated
+
+# Fork-local exclusions (issue #247): files the user deliberately keeps in L1
+# directories are not orphans. Same schema as manifest excluded_paths.
+local_manifest_path = os.path.join(script_dir, "update-manifest.local.json")
+local_excluded = []
+if os.path.isfile(local_manifest_path):
+    try:
+        with open(local_manifest_path) as f:
+            local_excluded = [_path(e) for e in json.load(f).get("excluded_paths", [])]
+    except (json.JSONDecodeError, TypeError) as exc:
+        print(f"  [warn] update-manifest.local.json unreadable, ignored: {exc}")
+
+def _locally_excluded(rel):
+    return any(rel == e.rstrip("/") or rel.startswith(e.rstrip("/") + "/")
+               for e in local_excluded)
 
 L1_DIRS = [".claude/hooks", ".claude/rules", ".claude/skills"]
 L1_PREFIXES = ["memory/protocol-"]
@@ -1170,7 +1274,7 @@ for base in L1_DIRS:
         for fname in files:
             full = os.path.join(root, fname)
             rel = os.path.relpath(full, script_dir)
-            if rel not in all_known:
+            if rel not in all_known and not _locally_excluded(rel):
                 tag = "[maybe-L3]" if "extensions/" in rel else "[orphan]"
                 orphans.append((tag, rel))
 
@@ -1214,7 +1318,16 @@ fi
 
 if ! $SKIP_COMMIT; then
     if ! git diff --quiet 2>/dev/null || [ -n "$(git ls-files --others --exclude-standard 2>/dev/null)" ]; then
-        git add -A
+        if is_author_mode; then
+            # issue #238: стейджить только реально применённые файлы update.sh (APPLIED_PATHS),
+            # иначе незапромоченные авторские правки в SCRIPT_DIR попадут в коммит
+            # «chore: update» с неверной атрибуцией (выглядит как часть update, а не авторская работа).
+            for fpath in "${APPLIED_PATHS[@]}"; do
+                git add "$fpath" 2>/dev/null || true
+            done
+        else
+            git add -A
+        fi
         git commit -m "chore: update from upstream template v$UPSTREAM_VERSION" --no-verify 2>&1 | sed 's/^/  /'
         echo "  ✓ Изменения закоммичены"
     else
@@ -1229,8 +1342,8 @@ fi
 # Раньше использовали $SCRIPT_DIR (FMT) → файла там нет → hint никогда не показывался.
 ENV_FILE="${WORKSPACE_DIR}/.exocortex.env"
 if [ -f "$ENV_FILE" ]; then
-    ENV_WS=$(grep -E '^WORKSPACE_DIR=' "$ENV_FILE" | head -1 | cut -d= -f2-)
-    ENV_GOV=$(grep -E '^GOVERNANCE_REPO=' "$ENV_FILE" | head -1 | cut -d= -f2-)
+    ENV_WS=$(grep -E '^WORKSPACE_DIR=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+    ENV_GOV=$(grep -E '^GOVERNANCE_REPO=' "$ENV_FILE" | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
     USER_STRATEGY="${ENV_WS:-}/${ENV_GOV:-DS-strategy}/docs/Strategy.md"
     if [ -f "$USER_STRATEGY" ] && ! grep -qF 'IWE-INITIAL-NEEDED' "$USER_STRATEGY"; then
         if grep -qE '^created: YYYY-MM-DD$|^updated: YYYY-MM-DD$' "$USER_STRATEGY" 2>/dev/null; then
@@ -1249,6 +1362,10 @@ SUMMARY_MSG="  Обновление завершено ($APPLIED файлов"
 [ "$REMOVED" -gt 0 ] && SUMMARY_MSG="$SUMMARY_MSG, $REMOVED удалено"
 SUMMARY_MSG="$SUMMARY_MSG)"
 echo "$SUMMARY_MSG"
+if [ "${AUTHOR_SKIPPED:-0}" -gt 0 ]; then
+    echo "  ⚠ author_mode: $AUTHOR_SKIPPED файлов пропущено (несмёрженные локальные правки)."
+    echo "    Синхронизация — через promote-скрипты, либо вручную после git push."
+fi
 echo "=========================================="
 echo ""
 echo "Перезапустите Claude Code для применения обновлений в memory/."
