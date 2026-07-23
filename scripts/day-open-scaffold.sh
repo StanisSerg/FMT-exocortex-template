@@ -447,7 +447,7 @@ run_bounded() {
 iwe_repo_dirs() {
   local repo real seen=""
   for repo in "$@"; do
-    [ -d "$repo/.git" ] || continue
+    [ -e "$repo/.git" ] || continue
     real=$(cd -P "$repo" 2>/dev/null && pwd) || continue
     case " $seen " in
       *" $real "*) continue ;;
@@ -564,7 +564,7 @@ render_iwe_status() {
   fi
 
   # template-sync (FMT last commit)
-  if [ -d "$IWE/FMT-exocortex-template/.git" ]; then
+  if [ -e "$IWE/FMT-exocortex-template/.git" ]; then
     local fmt_last
     fmt_last=$(git -C "$IWE/FMT-exocortex-template" log -1 --format="%cr" 2>/dev/null || echo "?")
     echo "| template-sync | 🟢 | FMT last commit: $fmt_last |"
@@ -735,7 +735,7 @@ INCEOF
   # Base repos (FPF/SPF/ZP) — fetch + behind count
   for repo in FPF SPF ZP; do
     local d="$IWE/$repo"
-    if [ -d "$d/.git" ]; then
+    if [ -e "$d/.git" ]; then
       run_bounded "${ISSUE_SWEEP_TIMEOUT:-10}" git -C "$d" fetch --quiet >/dev/null 2>&1
       local behind
       behind=$(git -C "$d" rev-list --count HEAD..origin/main 2>/dev/null || echo 0)
@@ -1023,7 +1023,7 @@ render_compact_dashboard() {
   local fpf_status fpf_fetch_ok
   # issue #241 (остаточная дыра): та же незащищённая git fetch, тот же класс зависания.
   # run_bounded не пробрасывает exit-код — результат передаём через маркер в stdout.
-  fpf_fetch_ok=$([ -d "$IWE/FPF/.git" ] && run_bounded "${ISSUE_SWEEP_TIMEOUT:-10}" \
+  fpf_fetch_ok=$([ -e "$IWE/FPF/.git" ] && run_bounded "${ISSUE_SWEEP_TIMEOUT:-10}" \
     bash -c "git -C '$IWE/FPF' fetch --quiet 2>/dev/null && echo ok")
   if [ "$fpf_fetch_ok" = "ok" ]; then
     local behind; behind=$(git -C "$IWE/FPF" rev-list --count HEAD..origin/main 2>/dev/null || echo "?")
